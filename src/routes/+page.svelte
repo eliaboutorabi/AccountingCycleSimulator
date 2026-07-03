@@ -277,6 +277,7 @@
 	let mode: Mode = $state('watch');
 	let theme: Theme = $state('night');
 	let sidebarOpen = $state(false);
+	let activeTocId = $state('source-evidence');
 	let expandedSections = $state<string[]>(['cycle-start']);
 	let flyoutSection = $state<string | null>(null);
 	let flyoutY = $state(0);
@@ -355,9 +356,45 @@
 		});
 	}
 
-	function chooseStage(index: number) {
+	function firstTocIdForStage(index: number) {
+		for (const section of tocSections) {
+			const child = section.children?.find((item) => item.stageIndex === index);
+
+			if (child) {
+				return child.id;
+			}
+
+			if (section.stageIndex === index) {
+				return section.id;
+			}
+		}
+
+		return tocSections[0].id;
+	}
+
+	function sectionIdForTocId(tocId: string) {
+		for (const section of tocSections) {
+			if (section.id === tocId || section.children?.some((item) => item.id === tocId)) {
+				return section.id;
+			}
+		}
+
+		return undefined;
+	}
+
+	function expandTocForItem(tocId: string) {
+		const sectionId = sectionIdForTocId(tocId);
+
+		if (sectionId && !expandedSections.includes(sectionId)) {
+			expandedSections = [...expandedSections, sectionId];
+		}
+	}
+
+	function chooseStage(index: number, tocId = firstTocIdForStage(index)) {
 		activeIndex = index;
+		activeTocId = tocId;
 		traceIndex = 0;
+		expandTocForItem(tocId);
 	}
 
 	function toggleSidebar() {
@@ -382,7 +419,7 @@
 
 	function navigateToc(item: TocItem) {
 		if (item.stageIndex !== undefined) {
-			chooseStage(item.stageIndex);
+			chooseStage(item.stageIndex, item.id);
 		}
 		if (item.children && !expandedSections.includes(item.id)) {
 			expandedSections = [...expandedSections, item.id];
@@ -460,7 +497,6 @@
 			<span class="brand-mark"><Calculator size={19} strokeWidth={2.4} /></span>
 			<span>
 				<strong>Accounting Cycle Simulator</strong>
-				<small>From source document to filing</small>
 			</span>
 		</a>
 
@@ -511,9 +547,6 @@
 				{@const active = isTocActive(section)}
 				<div class="toc-group">
 					<div class="toc-item" class:active>
-						{#if active}
-							<span class="active-bar"></span>
-						{/if}
 						<button type="button" class="toc-main" onclick={() => navigateToc(section)}>
 							{@render tocIcon(section, active, 17)}
 							<span>{section.label}</span>
@@ -539,7 +572,7 @@
 					{#if section.children && expandedSections.includes(section.id)}
 						<div class="toc-children">
 							{#each section.children as child (child.id)}
-								{@const childActive = child.stageIndex === activeIndex}
+								{@const childActive = activeTocId === child.id}
 								<button
 									type="button"
 									class="toc-child"
@@ -601,7 +634,7 @@
 					{#if section.children}
 						<div class="flyout-children">
 							{#each section.children as child (child.id)}
-								{@const childActive = child.stageIndex === activeIndex}
+								{@const childActive = activeTocId === child.id}
 								<button
 									type="button"
 									class="flyout-child"
@@ -1182,7 +1215,7 @@
 		--red: #a73d35;
 		--sidebar-width: 280px;
 		--sidebar-collapsed-width: 52px;
-		--header-height: 68px;
+		--header-height: 52px;
 		position: relative;
 		height: 100vh;
 		overflow: hidden;
@@ -1271,11 +1304,11 @@
 		left: 0;
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
-		gap: 18px;
+		gap: 14px;
 		align-items: center;
 		height: var(--header-height);
 		border-bottom: 1px solid var(--line);
-		padding: 12px 18px;
+		padding: 8px 16px;
 		background: color-mix(in srgb, var(--surface) 72%, transparent);
 		backdrop-filter: blur(24px) saturate(1.35);
 		-webkit-backdrop-filter: blur(24px) saturate(1.35);
@@ -1283,37 +1316,24 @@
 
 	.brand {
 		display: inline-flex;
-		gap: 10px;
+		gap: 8px;
 		align-items: center;
 		color: inherit;
 		text-decoration: none;
 	}
 
 	.brand-mark {
-		display: grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-		border-radius: 9px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		color: var(--accent);
-		background: color-mix(in srgb, var(--accent) 13%, transparent);
 		font-weight: 950;
 	}
 
-	.brand strong,
-	.brand small {
-		display: block;
-	}
-
 	.brand strong {
-		font-size: 0.98rem;
-	}
-
-	.brand small {
-		margin-top: 1px;
-		color: var(--muted);
-		font-size: 0.72rem;
+		display: block;
+		font-size: 0.94rem;
+		letter-spacing: 0.01em;
 	}
 
 	.header-spacer {
@@ -1349,8 +1369,17 @@
 	}
 
 	.theme-toggle {
-		width: 42px;
+		width: 30px;
+		min-height: 30px;
+		border: 0;
 		padding: 0;
+		color: var(--muted);
+		background: transparent;
+	}
+
+	.theme-toggle:hover {
+		color: var(--accent);
+		background: transparent;
 	}
 
 	.sidebar-backdrop,
@@ -1449,16 +1478,6 @@
 		color: var(--accent);
 	}
 
-	.active-bar {
-		position: absolute;
-		top: 7px;
-		bottom: 7px;
-		left: 0;
-		width: 3px;
-		border-radius: 0 999px 999px 0;
-		background: var(--accent);
-	}
-
 	.toc-main,
 	.toc-child,
 	.flyout-title,
@@ -1494,9 +1513,7 @@
 	.toc-children {
 		display: grid;
 		gap: 1px;
-		margin: 2px 0 8px 28px;
-		border-left: 1px solid var(--line);
-		padding-left: 10px;
+		margin: 2px 0 8px 30px;
 	}
 
 	.toc-child {
@@ -2155,7 +2172,7 @@
 		gap: 18px;
 		justify-content: space-between;
 		margin: 0;
-		border-bottom: 1px solid var(--grid);
+		border-bottom: 1px solid var(--line);
 		padding: 12px 0;
 	}
 
@@ -2241,14 +2258,31 @@
 		align-items: center;
 		justify-content: space-between;
 		border-top: 1px solid var(--line);
-		padding: 10px 18px;
-		background: color-mix(in srgb, var(--surface) 94%, transparent);
+		min-height: 44px;
+		padding: 4px 18px;
+		background: color-mix(in srgb, var(--surface) 88%, transparent);
+		backdrop-filter: blur(20px) saturate(1.25);
+		-webkit-backdrop-filter: blur(20px) saturate(1.25);
 	}
 
 	.sequence-bar span {
 		color: var(--muted);
-		font-size: 0.86rem;
+		font-size: 0.78rem;
 		font-weight: 850;
+	}
+
+	.sequence-bar button {
+		min-height: 30px;
+		border: 0;
+		padding: 0;
+		color: var(--muted);
+		background: transparent;
+		font-size: 0.88rem;
+	}
+
+	.sequence-bar button:not(:disabled):hover {
+		color: var(--accent);
+		background: transparent;
 	}
 
 	.sequence-bar button:disabled {
@@ -2315,16 +2349,12 @@
 		}
 
 		.masthead {
-			height: 58px;
-			padding: 10px;
+			height: 50px;
+			padding: 8px 10px;
 		}
 
 		.simulator {
-			--header-height: 58px;
-		}
-
-		.brand small {
-			display: none;
+			--header-height: 50px;
 		}
 
 		.brand strong {
