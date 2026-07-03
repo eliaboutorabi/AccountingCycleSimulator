@@ -5,5 +5,12 @@
 	let { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<link rel="icon" href={favicon} />
+	<title>Accounting Cycle Simulator</title>
+	<meta
+		name="description"
+		content="An interactive accounting cycle simulator that traces business events through ledgers, statements, disclosures, and mock SEC filings."
+	/>
+</svelte:head>
 {@render children()}
