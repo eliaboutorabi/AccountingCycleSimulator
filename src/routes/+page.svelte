@@ -1,6 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { asset } from '$app/paths';
+	import {
+		accountTypeCards,
+		accountingEquationExamples,
+		cashAccrualComparisons,
+		primerTerms
+	} from '$lib/accounting-cycle/concepts';
 	import { nimbusScenario } from '$lib/accounting-cycle/nimbus';
 	import type { CycleArcId } from '$lib/accounting-cycle/model';
 	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
@@ -45,6 +51,9 @@
 	type Theme = 'day' | 'night';
 	type StageId =
 		| 'home'
+		| 'accounting-equation'
+		| 'account-types'
+		| 'cash-vs-accrual'
 		| 'foundation-overview'
 		| 'record-overview'
 		| 'close-overview'
@@ -76,7 +85,7 @@
 	type SubledgerTab = 'ar' | 'revenue' | 'inventory' | 'ap';
 	type DisclosureTab = 'revenue' | 'deferred' | 'ppe' | 'debt';
 	type IconComponent = typeof ReceiptText;
-	type EventLane = 'Record now' | 'Record later' | 'Monitor' | 'Disclose / monitor';
+	type EventLane = 'Record now' | 'Recognize over time' | 'Monitor' | 'Disclose / monitor';
 
 	type Stage = {
 		id: StageId;
@@ -148,6 +157,78 @@
 			watchPrompt: 'Watch the $12,000 subscription move from source document to filing fact.',
 			doPrompt:
 				'Choose a point in the cycle and inspect what evidence or accounting object supports it.'
+		},
+		{
+			id: 'accounting-equation',
+			number: '01',
+			label: 'Accounting equation',
+			group: 'Basics',
+			icon: Calculator,
+			workspace: 'Resources and claims',
+			title: 'Learn the rule underneath every record',
+			question: 'What does Assets = Liabilities + Equity actually mean?',
+			lesson:
+				'The accounting equation is not a formula to memorize and then forget. It is the quiet rule that keeps the business story connected: everything Nimbus has must be funded by either outsiders or owners.',
+			notice: [
+				'Assets answer: what does the company have or control?',
+				'Liabilities answer: what does the company owe or still need to perform?',
+				'Equity answers: what claim belongs to owners after liabilities?'
+			],
+			example:
+				'If Nimbus bills Aster Labs $12,000 before service is delivered, assets rise through accounts receivable and liabilities rise through deferred revenue. The company has a claim on the customer, but the customer still has a claim on future service.',
+			mistake:
+				'Treating the equation as proof that the accounting is correct. Balanced records can still use the wrong account, wrong date, or wrong policy.',
+			keyPoint: 'Accounting starts by keeping resources and claims connected.',
+			watchPrompt: 'Watch common Nimbus events change resources and claims.',
+			doPrompt: 'Pick an event and explain which side of the equation changed.'
+		},
+		{
+			id: 'account-types',
+			number: '02',
+			label: 'Five account types',
+			group: 'Basics',
+			icon: Table2,
+			workspace: 'Account family map',
+			title: 'Name the family before writing the entry',
+			question: 'Is the account an asset, liability, equity, revenue, or expense?',
+			lesson:
+				'Debits and credits make much more sense once the learner knows what kind of account is being changed. Every account belongs to one of five families, and each family has a normal home in the statements.',
+			notice: [
+				'Assets, liabilities, and equity live on the balance sheet.',
+				'Revenue and expenses live on the income statement during the period.',
+				'Temporary accounts eventually close into retained earnings; balance sheet accounts carry forward.'
+			],
+			example:
+				'Cash is an asset, deferred revenue is a liability, common stock is equity, service revenue is revenue, and depreciation is an expense.',
+			mistake:
+				'Assuming a word like cash, bill, sale, or payment tells you the account type automatically. The accounting meaning depends on what changed.',
+			keyPoint: 'Account classification gives debits and credits their meaning.',
+			watchPrompt: 'Watch Nimbus accounts sort into their five families.',
+			doPrompt: 'Choose an account family and explain where it appears in the statements.'
+		},
+		{
+			id: 'cash-vs-accrual',
+			number: '03',
+			label: 'Cash vs accrual',
+			group: 'Basics',
+			icon: Banknote,
+			workspace: 'Timing lens',
+			title: 'Separate cash movement from earning',
+			question: 'Why does receiving cash not always mean revenue was earned?',
+			lesson:
+				'Cash accounting follows money. Accrual accounting follows economic activity: revenue when earned, expenses when incurred, assets while value remains, and liabilities while obligations remain.',
+			notice: [
+				'Cash can arrive before, during, or after revenue is earned.',
+				'Expenses can be paid before, during, or after the benefit is used.',
+				'The close exists because timing is rarely as neat as the bank statement.'
+			],
+			example:
+				'Aster Labs pays $12,000 upfront, but Nimbus earns the service revenue month by month. January gets $1,000 of revenue; the remaining $11,000 stays deferred.',
+			mistake:
+				'Letting the bank feed decide the income statement. Cash is evidence, but it is not the whole accounting conclusion.',
+			keyPoint: 'Accrual accounting tells the truth about timing.',
+			watchPrompt: 'Watch the same events through cash-basis and accrual-basis lenses.',
+			doPrompt: 'Choose whether the event is cash timing, accrual timing, or both.'
 		},
 		{
 			id: 'foundation-overview',
@@ -792,78 +873,217 @@
 		}
 	];
 
+	function stageIndexForId(id: StageId) {
+		const index = stages.findIndex((stage) => stage.id === id);
+		if (index < 0) {
+			throw new Error(`Missing accounting cycle stage: ${id}`);
+		}
+		return index;
+	}
+
 	const tocSections: TocItem[] = [
 		{
 			id: 'home-node',
 			label: 'Start here',
 			icon: Workflow,
-			stageIndex: 0
+			stageIndex: stageIndexForId('home')
+		},
+		{
+			id: 'basics',
+			label: 'Basics',
+			icon: Calculator,
+			stageIndex: stageIndexForId('accounting-equation'),
+			children: [
+				{
+					id: 'accounting-equation-node',
+					label: 'Accounting equation',
+					icon: Calculator,
+					stageIndex: stageIndexForId('accounting-equation')
+				},
+				{
+					id: 'account-types-node',
+					label: 'Five account types',
+					icon: Table2,
+					stageIndex: stageIndexForId('account-types')
+				},
+				{
+					id: 'cash-vs-accrual-node',
+					label: 'Cash vs accrual',
+					icon: Banknote,
+					stageIndex: stageIndexForId('cash-vs-accrual')
+				}
+			]
 		},
 		{
 			id: 'foundation',
 			label: 'Foundation',
 			icon: Building2,
-			stageIndex: 1,
+			stageIndex: stageIndexForId('foundation-overview'),
 			children: [
-				{ id: 'setup-node', label: 'Company setup', icon: Building2, stageIndex: 6 },
-				{ id: 'events-node', label: 'Event triage', icon: BriefcaseBusiness, stageIndex: 7 },
-				{ id: 'evidence-node', label: 'Evidence packet', icon: ReceiptText, stageIndex: 8 },
-				{ id: 'judgment-node', label: 'Accounting judgment', icon: Gavel, stageIndex: 9 }
+				{
+					id: 'setup-node',
+					label: 'Company setup',
+					icon: Building2,
+					stageIndex: stageIndexForId('setup')
+				},
+				{
+					id: 'events-node',
+					label: 'Event triage',
+					icon: BriefcaseBusiness,
+					stageIndex: stageIndexForId('events')
+				},
+				{
+					id: 'evidence-node',
+					label: 'Evidence packet',
+					icon: ReceiptText,
+					stageIndex: stageIndexForId('evidence')
+				},
+				{
+					id: 'judgment-node',
+					label: 'Accounting judgment',
+					icon: Gavel,
+					stageIndex: stageIndexForId('judgment')
+				}
 			]
 		},
 		{
 			id: 'record',
 			label: 'Record',
 			icon: FileText,
-			stageIndex: 2,
+			stageIndex: stageIndexForId('record-overview'),
 			children: [
-				{ id: 'subledger-node', label: 'Subledgers', icon: Layers3, stageIndex: 10 },
-				{ id: 'journal-node', label: 'Journal entries', icon: FileText, stageIndex: 11 },
-				{ id: 'matching-node', label: 'Match and settle', icon: PackageCheck, stageIndex: 12 },
-				{ id: 'ledger-node', label: 'General ledger', icon: Database, stageIndex: 13 }
+				{
+					id: 'subledger-node',
+					label: 'Subledgers',
+					icon: Layers3,
+					stageIndex: stageIndexForId('subledger')
+				},
+				{
+					id: 'journal-node',
+					label: 'Journal entries',
+					icon: FileText,
+					stageIndex: stageIndexForId('journal')
+				},
+				{
+					id: 'matching-node',
+					label: 'Match and settle',
+					icon: PackageCheck,
+					stageIndex: stageIndexForId('matching')
+				},
+				{
+					id: 'ledger-node',
+					label: 'General ledger',
+					icon: Database,
+					stageIndex: stageIndexForId('ledger')
+				}
 			]
 		},
 		{
 			id: 'close',
 			label: 'Close',
 			icon: Table2,
-			stageIndex: 3,
+			stageIndex: stageIndexForId('close-overview'),
 			children: [
-				{ id: 'cutoff-node', label: 'Cutoff', icon: SearchCheck, stageIndex: 14 },
-				{ id: 'adjustments-node', label: 'Adjustments', icon: Calculator, stageIndex: 15 },
+				{
+					id: 'cutoff-node',
+					label: 'Cutoff',
+					icon: SearchCheck,
+					stageIndex: stageIndexForId('cutoff')
+				},
+				{
+					id: 'adjustments-node',
+					label: 'Adjustments',
+					icon: Calculator,
+					stageIndex: stageIndexForId('adjustments')
+				},
 				{
 					id: 'reconciliations-node',
 					label: 'Reconciliations',
 					icon: ClipboardCheck,
-					stageIndex: 16
+					stageIndex: stageIndexForId('reconciliations')
 				},
-				{ id: 'trial-node', label: 'Trial balance', icon: Table2, stageIndex: 17 },
-				{ id: 'consolidation-node', label: 'Consolidation', icon: Network, stageIndex: 18 }
+				{
+					id: 'trial-node',
+					label: 'Trial balance',
+					icon: Table2,
+					stageIndex: stageIndexForId('trial')
+				},
+				{
+					id: 'consolidation-node',
+					label: 'Consolidation',
+					icon: Network,
+					stageIndex: stageIndexForId('consolidation')
+				}
 			]
 		},
 		{
 			id: 'report',
 			label: 'Report',
 			icon: Landmark,
-			stageIndex: 4,
+			stageIndex: stageIndexForId('report-overview'),
 			children: [
-				{ id: 'mapping-node', label: 'Statement mapping', icon: Workflow, stageIndex: 19 },
-				{ id: 'statements-node', label: 'Statements', icon: Landmark, stageIndex: 20 },
-				{ id: 'cash-flow-node', label: 'Cash flow', icon: Banknote, stageIndex: 21 },
-				{ id: 'disclosures-node', label: 'Disclosures', icon: BookOpen, stageIndex: 22 }
+				{
+					id: 'mapping-node',
+					label: 'Statement mapping',
+					icon: Workflow,
+					stageIndex: stageIndexForId('mapping')
+				},
+				{
+					id: 'statements-node',
+					label: 'Statements',
+					icon: Landmark,
+					stageIndex: stageIndexForId('statements')
+				},
+				{
+					id: 'cash-flow-node',
+					label: 'Cash flow',
+					icon: Banknote,
+					stageIndex: stageIndexForId('cash-flow')
+				},
+				{
+					id: 'disclosures-node',
+					label: 'Disclosures',
+					icon: BookOpen,
+					stageIndex: stageIndexForId('disclosures')
+				}
 			]
 		},
 		{
 			id: 'assure',
 			label: 'Assure and file',
 			icon: ShieldCheck,
-			stageIndex: 5,
+			stageIndex: stageIndexForId('assure-overview'),
 			children: [
-				{ id: 'tie-out-node', label: 'Stick and tie', icon: Tags, stageIndex: 23 },
-				{ id: 'controls-node', label: 'Controls', icon: ShieldCheck, stageIndex: 24 },
-				{ id: 'audit-node', label: 'Audit evidence', icon: FileCheck2, stageIndex: 25 },
-				{ id: 'filing-node', label: 'Filing package', icon: ScrollText, stageIndex: 26 },
-				{ id: 'debrief-node', label: 'Debrief', icon: ListChecks, stageIndex: 27 }
+				{
+					id: 'tie-out-node',
+					label: 'Stick and tie',
+					icon: Tags,
+					stageIndex: stageIndexForId('tie-out')
+				},
+				{
+					id: 'controls-node',
+					label: 'Controls',
+					icon: ShieldCheck,
+					stageIndex: stageIndexForId('controls')
+				},
+				{
+					id: 'audit-node',
+					label: 'Audit evidence',
+					icon: FileCheck2,
+					stageIndex: stageIndexForId('audit')
+				},
+				{
+					id: 'filing-node',
+					label: 'Filing package',
+					icon: ScrollText,
+					stageIndex: stageIndexForId('filing')
+				},
+				{
+					id: 'debrief-node',
+					label: 'Debrief',
+					icon: ListChecks,
+					stageIndex: stageIndexForId('debrief')
+				}
 			]
 		}
 	];
@@ -879,6 +1099,7 @@
 	const landingStats = nimbusScenario.landingStats;
 	const landingCycle = nimbusScenario.cycleArcs.map((arc) => ({
 		...arc,
+		stage: stageIndexForId(arc.stageId as StageId),
 		icon: cycleIconById[arc.id]
 	}));
 
@@ -1027,9 +1248,9 @@
 				'Recognition criteria are met in this period and a supported entry is needed now.'
 		},
 		{
-			label: 'Record later',
+			label: 'Recognize over time',
 			description:
-				'Evidence exists, but recognition waits for performance, delivery, receipt, or passage of time.'
+				'The event creates accounting now, but revenue or expense recognition happens as performance or time passes.'
 		},
 		{
 			label: 'Monitor',
@@ -1051,7 +1272,7 @@
 			counterparty: 'Aster Labs',
 			amount: '$12,000',
 			evidence: 'C-1001 / INV-1001',
-			lane: 'Record later' as EventLane,
+			lane: 'Recognize over time' as EventLane,
 			trigger: 'Contract signed and invoice issued for a 12-month stand-ready maintenance service.',
 			accountingQuestion:
 				'Has Nimbus earned revenue on day one, or only created a receivable and contract liability?',
@@ -2298,9 +2519,12 @@
 	let demoStep = $state(0);
 	let theme: Theme = $state('night');
 	let sidebarOpen = $state(false);
-	let expandedSections = $state<string[]>(['foundation']);
+	let expandedSections = $state<string[]>(['basics']);
 	let flyoutSection = $state<string | null>(null);
 	let flyoutY = $state(0);
+	let selectedEquationExampleId = $state(accountingEquationExamples[0].id);
+	let selectedAccountTypeId = $state(accountTypeCards[0].id);
+	let selectedBasisExampleId = $state(cashAccrualComparisons[0].id);
 	let selectedSetupAreaId = $state('accounts');
 	let selectedEventId = $state('subscription-contract');
 	let selectedLane: EventLane | null = $state(null);
@@ -2322,6 +2546,17 @@
 
 	const activeStage = $derived(stages[activeIndex]);
 	const ActiveIcon = $derived(activeStage.icon);
+	const selectedEquationExample = $derived(
+		accountingEquationExamples.find((example) => example.id === selectedEquationExampleId) ??
+			accountingEquationExamples[0]
+	);
+	const selectedAccountType = $derived(
+		accountTypeCards.find((card) => card.id === selectedAccountTypeId) ?? accountTypeCards[0]
+	);
+	const selectedBasisExample = $derived(
+		cashAccrualComparisons.find((example) => example.id === selectedBasisExampleId) ??
+			cashAccrualComparisons[0]
+	);
 	const landingHeroSrc = $derived.by(() =>
 		asset(
 			theme === ('day' as Theme)
@@ -2437,6 +2672,13 @@
 		}
 		if (expand) expandTocForItem(tocId);
 		flyoutSection = null;
+		void resetWorkspaceScroll();
+	}
+
+	async function resetWorkspaceScroll() {
+		await tick();
+		document.querySelector('.lesson-panel')?.scrollTo({ top: 0 });
+		document.querySelector('.process-panel')?.scrollTo({ top: 0 });
 	}
 
 	function isTocActive(item: TocItem) {
@@ -2504,6 +2746,10 @@
 		chooseStage(0, 'home-node');
 	}
 
+	function beginBasics() {
+		chooseStage(stageIndexForId('accounting-equation'), 'accounting-equation-node');
+	}
+
 	function returnToLanding() {
 		landingVisible = true;
 		flyoutSection = null;
@@ -2544,6 +2790,27 @@
 						'The same transaction remains connected to source evidence, accounting judgment, ledgers, reports, and review evidence.'
 				}
 			];
+		}
+
+		if (stage.id === 'accounting-equation') {
+			return accountingEquationExamples.map((example) => ({
+				label: example.label,
+				detail: `${example.resources} ${example.claims}`
+			}));
+		}
+
+		if (stage.id === 'account-types') {
+			return accountTypeCards.map((card) => ({
+				label: card.label,
+				detail: `${card.question} Normal balance: ${card.normalBalance}.`
+			}));
+		}
+
+		if (stage.id === 'cash-vs-accrual') {
+			return cashAccrualComparisons.map((example) => ({
+				label: example.event,
+				detail: example.whyItMatters
+			}));
 		}
 
 		if (stage.id === 'setup') {
@@ -2636,6 +2903,26 @@
 		if (stageId === 'setup') {
 			selectedSetupAreaId =
 				setupAreas[Math.min(step, setupAreas.length - 1)]?.id ?? selectedSetupAreaId;
+			supportVisible = step > 1;
+		}
+
+		if (stageId === 'accounting-equation') {
+			selectedEquationExampleId =
+				accountingEquationExamples[Math.min(step, accountingEquationExamples.length - 1)]?.id ??
+				selectedEquationExampleId;
+			supportVisible = step > 1;
+		}
+
+		if (stageId === 'account-types') {
+			selectedAccountTypeId =
+				accountTypeCards[Math.min(step, accountTypeCards.length - 1)]?.id ?? selectedAccountTypeId;
+			supportVisible = step > 1;
+		}
+
+		if (stageId === 'cash-vs-accrual') {
+			selectedBasisExampleId =
+				cashAccrualComparisons[Math.min(step, cashAccrualComparisons.length - 1)]?.id ??
+				selectedBasisExampleId;
 			supportVisible = step > 1;
 		}
 
@@ -2962,7 +3249,6 @@
 				<div class="entry-hero-overlay"></div>
 				<div class="entry-hero-content">
 					<div class="entry-hero-brand">
-						<Calculator class="entry-hero-mark" size={72} strokeWidth={1.9} aria-hidden="true" />
 						<h1 id="entry-title">Accounting Cycle Simulator</h1>
 					</div>
 					<p>
@@ -3178,12 +3464,8 @@
 							<p class="landing-lede">{nimbusScenario.introduction}</p>
 
 							<div class="landing-actions">
-								<button
-									type="button"
-									class="landing-primary"
-									onclick={() => chooseStage(6, 'setup-node')}
-								>
-									<span>Begin with setup</span>
+								<button type="button" class="landing-primary" onclick={beginBasics}>
+									<span>Begin with basics</span>
 									<ArrowRight size={17} strokeWidth={2.5} />
 								</button>
 								<button type="button" class="landing-secondary" onclick={() => (traceIndex = 7)}>
@@ -3411,6 +3693,170 @@
 											<p>{traceNodes[traceIndex].detail}</p>
 										</div>
 									</div>
+								</div>
+							</section>
+						{:else if activeStage.id === 'accounting-equation'}
+							<section class="primer-workbench">
+								<div class="primer-selector" aria-label="Accounting equation examples">
+									{#each accountingEquationExamples as example (example.id)}
+										<button
+											type="button"
+											class={selectedEquationExampleId === example.id ? 'active' : ''}
+											onclick={() => (selectedEquationExampleId = example.id)}
+										>
+											<strong>{example.label}</strong>
+											<span>{example.event}</span>
+										</button>
+									{/each}
+								</div>
+
+								<div class="primer-main-card">
+									<small>Assets = liabilities + equity</small>
+									<h3>{selectedEquationExample.label}</h3>
+									<p>{selectedEquationExample.event}</p>
+									<div class="equation-balance">
+										<div>
+											<span>Resources</span>
+											<strong>{selectedEquationExample.resources}</strong>
+										</div>
+										<div class="equation-equals">=</div>
+										<div>
+											<span>Claims</span>
+											<strong>{selectedEquationExample.claims}</strong>
+										</div>
+									</div>
+									<div class="equation-line">{selectedEquationExample.equation}</div>
+								</div>
+
+								<aside class="primer-side-card">
+									<small>Plain English first</small>
+									<h3>What this means</h3>
+									<p>{selectedEquationExample.beginnerMeaning}</p>
+									<div class="setup-output">
+										<span>Professional translation</span>
+										<strong>{selectedEquationExample.professionalTranslation}</strong>
+									</div>
+									<div class="setup-risk">
+										<AlertTriangle class="setup-risk-icon" size={16} strokeWidth={2.3} />
+										<span
+											>Balanced means connected. It does not prove the account, date, or policy is
+											correct.</span
+										>
+									</div>
+								</aside>
+
+								<div class="concept-strip" aria-label="Beginner concept definitions">
+									{#each primerTerms.slice(0, 4) as term (term.slug)}
+										<div>
+											<small>{term.shortDefinition}</small>
+											<strong>{term.term}</strong>
+											<span>{term.plainMeaning}</span>
+										</div>
+									{/each}
+								</div>
+							</section>
+						{:else if activeStage.id === 'account-types'}
+							<section class="primer-workbench">
+								<div class="account-family-grid" aria-label="Account type cards">
+									{#each accountTypeCards as card (card.id)}
+										<button
+											type="button"
+											class={selectedAccountTypeId === card.id ? 'active' : ''}
+											onclick={() => (selectedAccountTypeId = card.id)}
+										>
+											<strong>{card.label}</strong>
+											<span>{card.question}</span>
+											<em>{card.normalBalance} normal balance</em>
+										</button>
+									{/each}
+								</div>
+
+								<div class="primer-main-card">
+									<small>{selectedAccountType.statementHome}</small>
+									<h3>{selectedAccountType.label}</h3>
+									<p>{selectedAccountType.plainMeaning}</p>
+									<div class="account-type-facts">
+										<div>
+											<span>Normal balance</span><strong>{selectedAccountType.normalBalance}</strong
+											>
+										</div>
+										<div>
+											<span>Statement home</span><strong>{selectedAccountType.statementHome}</strong
+											>
+										</div>
+									</div>
+									<div class="setup-output">
+										<span>Nimbus examples</span>
+										<strong>{selectedAccountType.nimbusExample}</strong>
+									</div>
+								</div>
+
+								<aside class="primer-side-card">
+									<small>Common beginner trap</small>
+									<h3>Do not memorize words alone</h3>
+									<p>{selectedAccountType.commonMixup}</p>
+									<div class="setup-risk">
+										<AlertTriangle class="setup-risk-icon" size={16} strokeWidth={2.3} />
+										<span>Always ask what changed before choosing an account family.</span>
+									</div>
+								</aside>
+
+								<div class="concept-strip" aria-label="Account type concept definitions">
+									{#each primerTerms.slice(1, 5) as term (term.slug)}
+										<div>
+											<small>{term.shortDefinition}</small>
+											<strong>{term.term}</strong>
+											<span>{term.plainMeaning}</span>
+										</div>
+									{/each}
+								</div>
+							</section>
+						{:else if activeStage.id === 'cash-vs-accrual'}
+							<section class="primer-workbench">
+								<div class="primer-selector" aria-label="Cash and accrual timing examples">
+									{#each cashAccrualComparisons as example (example.id)}
+										<button
+											type="button"
+											class={selectedBasisExampleId === example.id ? 'active' : ''}
+											onclick={() => (selectedBasisExampleId = example.id)}
+										>
+											<strong>{example.event}</strong>
+											<span>{example.journalHint}</span>
+										</button>
+									{/each}
+								</div>
+
+								<div class="timing-lens-grid">
+									<div class="primer-main-card">
+										<small>Cash lens</small>
+										<h3>Follow the money</h3>
+										<p>{selectedBasisExample.cashView}</p>
+									</div>
+									<div class="primer-main-card">
+										<small>Accrual lens</small>
+										<h3>Follow the economic activity</h3>
+										<p>{selectedBasisExample.accrualView}</p>
+									</div>
+								</div>
+
+								<aside class="primer-side-card">
+									<small>Why accountants care</small>
+									<h3>{selectedBasisExample.event}</h3>
+									<p>{selectedBasisExample.whyItMatters}</p>
+									<div class="setup-output">
+										<span>Journal instinct</span>
+										<strong>{selectedBasisExample.journalHint}</strong>
+									</div>
+								</aside>
+
+								<div class="concept-strip" aria-label="Timing concept definitions">
+									{#each primerTerms.filter( (term) => ['revenue', 'deferred-revenue', 'cutoff'].includes(term.slug) ) as term (term.slug)}
+										<div>
+											<small>{term.shortDefinition}</small>
+											<strong>{term.term}</strong>
+											<span>{term.plainMeaning}</span>
+										</div>
+									{/each}
 								</div>
 							</section>
 						{:else if activeStage.id.endsWith('-overview')}
@@ -4584,14 +5030,7 @@
 	}
 
 	.entry-hero-brand {
-		display: grid;
-		gap: 18px;
-		align-items: start;
-	}
-
-	.entry-hero-mark {
-		color: var(--accent);
-		filter: drop-shadow(0 10px 22px color-mix(in srgb, var(--bg) 58%, transparent));
+		max-width: min(790px, 66vw);
 	}
 
 	.entry-hero-brand h1 {
@@ -5609,6 +6048,192 @@
 		margin: 0;
 		color: var(--muted);
 		line-height: 1.45;
+	}
+
+	.primer-workbench {
+		display: grid;
+		grid-template-columns: minmax(240px, 0.72fr) minmax(360px, 1fr);
+		gap: 16px;
+		align-items: start;
+	}
+
+	.primer-selector,
+	.account-family-grid {
+		display: grid;
+		gap: 9px;
+	}
+
+	.account-family-grid {
+		grid-template-columns: repeat(5, minmax(120px, 1fr));
+		grid-column: 1 / -1;
+	}
+
+	.primer-selector button,
+	.account-family-grid button {
+		display: grid;
+		gap: 6px;
+		min-height: 98px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 13px;
+		background: color-mix(in srgb, var(--surface) 70%, transparent);
+		text-align: left;
+	}
+
+	.primer-selector button:hover,
+	.account-family-grid button:hover {
+		border-color: color-mix(in srgb, var(--accent) 46%, var(--line));
+		background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+	}
+
+	.primer-selector button.active,
+	.account-family-grid button.active {
+		border-color: color-mix(in srgb, var(--accent) 58%, transparent);
+		background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+	}
+
+	.primer-selector strong,
+	.account-family-grid strong {
+		font-size: 0.9rem;
+		line-height: 1.25;
+	}
+
+	.primer-selector span,
+	.account-family-grid span,
+	.account-family-grid em {
+		color: var(--muted);
+		font-size: 0.78rem;
+		line-height: 1.35;
+	}
+
+	.account-family-grid em {
+		color: var(--accent-2);
+		font-style: normal;
+		font-weight: 850;
+	}
+
+	.primer-main-card,
+	.primer-side-card {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: clamp(18px, 2vw, 24px);
+		background: color-mix(in srgb, var(--surface) 78%, transparent);
+	}
+
+	.primer-side-card {
+		align-self: stretch;
+	}
+
+	.primer-main-card small,
+	.primer-side-card small,
+	.concept-strip small,
+	.equation-balance span,
+	.account-type-facts span {
+		color: var(--accent-2);
+		font-size: 0.68rem;
+		font-weight: 950;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+
+	.primer-main-card h3,
+	.primer-side-card h3 {
+		margin: 6px 0 10px;
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: clamp(1.35rem, 2.1vw, 2.1rem);
+		line-height: 1.08;
+	}
+
+	.primer-main-card p,
+	.primer-side-card p {
+		margin: 0;
+		color: var(--muted);
+		line-height: 1.55;
+	}
+
+	.equation-balance,
+	.account-type-facts,
+	.timing-lens-grid {
+		display: grid;
+		gap: 10px;
+		margin-top: 18px;
+	}
+
+	.equation-balance {
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		align-items: stretch;
+	}
+
+	.equation-balance > div:not(.equation-equals),
+	.account-type-facts > div {
+		display: grid;
+		gap: 6px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px;
+		background: color-mix(in srgb, var(--surface-strong) 44%, transparent);
+	}
+
+	.equation-balance strong,
+	.account-type-facts strong {
+		line-height: 1.35;
+	}
+
+	.equation-equals {
+		display: grid;
+		place-items: center;
+		color: var(--accent);
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: 1.8rem;
+		font-weight: 900;
+	}
+
+	.equation-line {
+		margin-top: 12px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 12px;
+		background: color-mix(in srgb, var(--accent) 9%, transparent);
+		font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+		font-size: 0.86rem;
+		font-weight: 800;
+		line-height: 1.45;
+	}
+
+	.account-type-facts,
+	.timing-lens-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.timing-lens-grid {
+		grid-column: span 1;
+	}
+
+	.concept-strip {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-column: 1 / -1;
+		gap: 10px;
+	}
+
+	.concept-strip div {
+		display: grid;
+		gap: 5px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 13px;
+		background: color-mix(in srgb, var(--surface-strong) 42%, transparent);
+	}
+
+	.concept-strip strong {
+		font-size: 0.92rem;
+		line-height: 1.25;
+	}
+
+	.concept-strip span {
+		color: var(--muted);
+		font-size: 0.82rem;
+		line-height: 1.4;
 	}
 
 	.setup-workbench {
@@ -6743,8 +7368,12 @@
 			max-width: min(620px, 74vw);
 		}
 
+		.entry-hero-brand {
+			max-width: min(650px, 76vw);
+		}
+
 		.entry-hero-brand h1 {
-			max-width: 12ch;
+			max-width: 10.5ch;
 			font-size: clamp(3.5rem, 8.5vw, 6rem);
 		}
 
@@ -6817,17 +7446,12 @@
 		}
 
 		.entry-hero-brand {
-			gap: 12px;
-		}
-
-		.entry-hero-mark {
-			width: 48px;
-			height: 48px;
+			max-width: 100%;
 		}
 
 		.entry-hero-brand h1 {
-			max-width: 10ch;
-			font-size: clamp(3rem, 15vw, 4.15rem);
+			max-width: 9.8ch;
+			font-size: clamp(2.85rem, 12.6vw, 3.4rem);
 			line-height: 0.9;
 		}
 
@@ -6937,6 +7561,12 @@
 		.node-grid,
 		.landing-stats,
 		.landing-ledger-mini,
+		.primer-workbench,
+		.account-family-grid,
+		.equation-balance,
+		.account-type-facts,
+		.timing-lens-grid,
+		.concept-strip,
 		.setup-area-list,
 		.setup-readiness,
 		.overview-steps,

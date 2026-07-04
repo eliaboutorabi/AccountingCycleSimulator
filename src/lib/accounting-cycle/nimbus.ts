@@ -15,37 +15,46 @@ export const nimbusScenario: AccountingScenario = {
 	landingStats: [
 		{ label: 'Company', value: 'Nimbus Bikes', detail: 'January 2026 close' },
 		{ label: 'Primary trail', value: '$12,000', detail: 'Contract to filing fact' },
-		{ label: 'Coverage', value: '28 screens', detail: 'Setup, records, close, report, audit' }
+		{
+			label: 'Coverage',
+			value: '31 screens',
+			detail: 'Basics, setup, records, close, report, audit'
+		}
 	],
 	cycleArcs: [
 		{
 			id: 'foundation',
 			label: 'Foundation',
 			stage: 6,
+			stageId: 'foundation-overview',
 			detail: 'Set up the company, triage events, collect evidence, and write the judgment.'
 		},
 		{
 			id: 'record',
 			label: 'Record',
 			stage: 10,
+			stageId: 'record-overview',
 			detail: 'Create subledgers, journal entries, cash matching, and GL postings.'
 		},
 		{
 			id: 'close',
 			label: 'Close',
 			stage: 14,
+			stageId: 'close-overview',
 			detail: 'Test cutoff, post adjustments, reconcile, and review the adjusted trial balance.'
 		},
 		{
 			id: 'report',
 			label: 'Report',
 			stage: 19,
+			stageId: 'report-overview',
 			detail: 'Map balances into statements, cash flow, disclosures, and tie-outs.'
 		},
 		{
 			id: 'assure',
 			label: 'Assure',
 			stage: 23,
+			stageId: 'assure-overview',
 			detail: 'Run controls, answer audit requests, tag facts, and assemble the filing package.'
 		}
 	],

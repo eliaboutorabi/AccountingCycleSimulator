@@ -10,6 +10,7 @@ export type CycleArc = {
 	id: CycleArcId;
 	label: string;
 	stage: number;
+	stageId: string;
 	detail: string;
 };
 
