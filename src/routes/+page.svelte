@@ -28,8 +28,8 @@
 	import PackageCheck from '@lucide/svelte/icons/package-check';
 	import PanelLeft from '@lucide/svelte/icons/panel-left';
 	import PanelLeftClose from '@lucide/svelte/icons/panel-left-close';
-	import Play from '@lucide/svelte/icons/play';
 	import ReceiptText from '@lucide/svelte/icons/receipt-text';
+	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
 	import ScrollText from '@lucide/svelte/icons/scroll-text';
 	import SearchCheck from '@lucide/svelte/icons/search-check';
 	import ShieldCheck from '@lucide/svelte/icons/shield-check';
@@ -41,6 +41,12 @@
 	type Mode = 'watch' | 'do';
 	type Theme = 'day' | 'night';
 	type StageId =
+		| 'home'
+		| 'foundation-overview'
+		| 'record-overview'
+		| 'close-overview'
+		| 'report-overview'
+		| 'assure-overview'
 		| 'setup'
 		| 'events'
 		| 'evidence'
@@ -94,6 +100,11 @@
 		children?: TocItem[];
 	};
 
+	type DemoStep = {
+		label: string;
+		detail: string;
+	};
+
 	type StatementLine = {
 		label: string;
 		current: number;
@@ -109,6 +120,146 @@
 	};
 
 	const stages: Stage[] = [
+		{
+			id: 'home',
+			number: '00',
+			label: 'Start here',
+			group: 'Orientation',
+			icon: Workflow,
+			workspace: 'Cycle map',
+			title: 'Follow one number through the close',
+			question: 'How does one business event become a reported, tied, and filed number?',
+			lesson:
+				'You are joining the accounting team at Nimbus Bikes for a January close. The simulator follows business evidence through judgment, records, ledgers, close workpapers, statements, disclosures, controls, audit requests, and a mock filing.',
+			notice: [
+				'The left pane teaches the accounting question and what can go wrong.',
+				'The right pane shows or lets you perform the accounting work in the artifact that accountants actually use.',
+				'The same number should remain traceable from source evidence to final reporting.'
+			],
+			example:
+				'The annual maintenance invoice starts as a contract and invoice, becomes deferred revenue, releases one month to revenue, appears in statements and disclosures, then receives an Inline XBRL-style tag.',
+			mistake:
+				'Jumping straight to debits and credits without asking what happened, what proves it, and what policy governs it.',
+			keyPoint: 'The promise of the app is traceability: every material number has a trail.',
+			watchPrompt: 'Watch the $12,000 subscription move from source document to filing fact.',
+			doPrompt: 'Choose a point in the cycle and inspect what evidence or accounting object supports it.'
+		},
+		{
+			id: 'foundation-overview',
+			number: '01',
+			label: 'Foundation overview',
+			group: 'Foundation',
+			icon: Building2,
+			workspace: 'Foundation roadmap',
+			title: 'Set up the accounting trail',
+			question: 'What must be true before accounting can record anything responsibly?',
+			lesson:
+				'The foundation arc defines the company, decides whether business activity matters for accounting, captures source evidence, and documents the accounting judgment. It is the part of the cycle that prevents careless journal entries.',
+			notice: [
+				'Company structure determines what accounts, dimensions, policies, and approvals exist.',
+				'Event triage decides whether accounting acts now, later, or only monitors.',
+				'Evidence and judgment become the support reviewers and auditors will need later.'
+			],
+			example:
+				'Nimbus cannot record the subscription cleanly until the contract, invoice, service period, cash receipt, and revenue policy are connected.',
+			mistake:
+				'Treating source documents as bookkeeping clutter instead of the evidence base for every downstream number.',
+			keyPoint: 'Foundation work makes later accounting explainable.',
+			watchPrompt: 'Watch setup, event triage, evidence, and judgment prepare one transaction.',
+			doPrompt: 'Pick which foundational artifact is missing before the transaction can proceed.'
+		},
+		{
+			id: 'record-overview',
+			number: '02',
+			label: 'Record overview',
+			group: 'Record',
+			icon: FileText,
+			workspace: 'Recording roadmap',
+			title: 'Turn evidence into books',
+			question: 'How does supported business activity become accounting records?',
+			lesson:
+				'The record arc creates detailed subledger records, journal entries, matching evidence, cash application, and official general ledger postings. This is where business reality becomes the book of record.',
+			notice: [
+				'Subledgers preserve detail by customer, vendor, inventory item, asset, contract, and schedule.',
+				'Journal entries translate facts into debits and credits, but support and classification still matter.',
+				'Matching and settlement prove that recorded balances connect to operations and cash.'
+			],
+			example:
+				'The same subscription creates AR, deferred revenue, a revenue schedule, cash application, and GL activity.',
+			mistake: 'Thinking a balanced journal entry is enough when support, period, and account choice are wrong.',
+			keyPoint: 'Recording is a controlled translation, not a typing exercise.',
+			watchPrompt: 'Watch the transaction move through subledger, journal, matching, and GL.',
+			doPrompt: 'Choose the accounting record that should be created next.'
+		},
+		{
+			id: 'close-overview',
+			number: '03',
+			label: 'Close overview',
+			group: 'Close',
+			icon: Table2,
+			workspace: 'Close roadmap',
+			title: 'Make the period ready to report',
+			question: 'How does the accounting team prove January is complete, accurate, and reviewed?',
+			lesson:
+				'The close arc tests cutoff, posts supported adjustments, reconciles accounts, reviews the adjusted trial balance, and consolidates entities. It turns raw books into report-ready balances.',
+			notice: [
+				'Cutoff protects period boundaries.',
+				'Adjustments capture estimates and timing that operational feeds do not finish alone.',
+				'Reconciliations and trial balance review prove balances before reporting.'
+			],
+			example:
+				'Nimbus accrues received-not-invoiced inventory, releases one month of revenue, posts depreciation, reconciles the subledgers, and reviews the adjusted TB.',
+			mistake: 'Calling the close done because debits equal credits.',
+			keyPoint: 'Close work proves the period, not just the math.',
+			watchPrompt: 'Watch cutoff, adjustments, reconciliations, trial balance, and consolidation prepare reporting.',
+			doPrompt: 'Identify the open close blocker before statements can be prepared.'
+		},
+		{
+			id: 'report-overview',
+			number: '04',
+			label: 'Report overview',
+			group: 'Report',
+			icon: Landmark,
+			workspace: 'Reporting roadmap',
+			title: 'Turn balances into communication',
+			question: 'How do adjusted balances become statements, cash flow, and disclosures?',
+			lesson:
+				'The reporting arc maps accounts to statement lines, prepares comparative statements, explains cash movement, and drafts footnotes that tie back to support.',
+			notice: [
+				'Statement mapping is a control, not an afterthought.',
+				'Financial statements need comparative columns, subtotals, note references, and traceability.',
+				'Footnotes explain policies, rollforwards, concentrations, and details that statement lines summarize.'
+			],
+			example:
+				'Deferred revenue appears as a liability on the balance sheet, a rollforward in the notes, and an explanation in the revenue policy disclosure.',
+			mistake: 'Preparing attractive statement tables that cannot be traced back to the ledger and notes.',
+			keyPoint: 'Reporting is structured communication backed by accounting evidence.',
+			watchPrompt: 'Watch statement mapping, the binder, cash flow, and disclosures tie together.',
+			doPrompt: 'Select the reporting artifact that proves a statement line.'
+		},
+		{
+			id: 'assure-overview',
+			number: '05',
+			label: 'Assure and file overview',
+			group: 'Assure and file',
+			icon: ShieldCheck,
+			workspace: 'Assurance roadmap',
+			title: 'Certify, audit, file, and improve',
+			question: 'How does a reporting package become credible enough to file?',
+			lesson:
+				'The assurance arc ties repeated numbers, clears management review, answers audit requests, assembles the mock filing, and turns close pain points into next-period improvements.',
+			notice: [
+				'Repeated numbers must agree across statements, notes, MD&A tables, and structured data.',
+				'Controls and review evidence support management certification.',
+				'Audit requests test whether the accounting trail is persuasive under pressure.'
+			],
+			example:
+				'Nimbus cannot mark the mock 10-Q ready while a revenue tie-out, manual journal approval, or XBRL tag review remains unresolved.',
+			mistake: 'Treating filing as a final export instead of the final page of a controlled reporting process.',
+			keyPoint: 'Assurance is traceability tested from several angles.',
+			watchPrompt: 'Watch tie-out, controls, audit requests, filing assembly, and debrief move toward readiness.',
+			doPrompt: 'Clear the blocker that keeps the filing package from being ready.'
+		},
 		{
 			id: 'setup',
 			number: '00',
@@ -633,65 +784,76 @@
 
 	const tocSections: TocItem[] = [
 		{
+			id: 'home-node',
+			label: 'Start here',
+			icon: Workflow,
+			stageIndex: 0
+		},
+		{
 			id: 'foundation',
 			label: 'Foundation',
 			icon: Building2,
+			stageIndex: 1,
 			children: [
-				{ id: 'setup-node', label: 'Company setup', icon: Building2, stageIndex: 0 },
-				{ id: 'events-node', label: 'Event triage', icon: BriefcaseBusiness, stageIndex: 1 },
-				{ id: 'evidence-node', label: 'Evidence packet', icon: ReceiptText, stageIndex: 2 },
-				{ id: 'judgment-node', label: 'Accounting judgment', icon: Gavel, stageIndex: 3 }
+				{ id: 'setup-node', label: 'Company setup', icon: Building2, stageIndex: 6 },
+				{ id: 'events-node', label: 'Event triage', icon: BriefcaseBusiness, stageIndex: 7 },
+				{ id: 'evidence-node', label: 'Evidence packet', icon: ReceiptText, stageIndex: 8 },
+				{ id: 'judgment-node', label: 'Accounting judgment', icon: Gavel, stageIndex: 9 }
 			]
 		},
 		{
 			id: 'record',
 			label: 'Record',
 			icon: FileText,
+			stageIndex: 2,
 			children: [
-				{ id: 'subledger-node', label: 'Subledgers', icon: Layers3, stageIndex: 4 },
-				{ id: 'journal-node', label: 'Journal entries', icon: FileText, stageIndex: 5 },
-				{ id: 'matching-node', label: 'Match and settle', icon: PackageCheck, stageIndex: 6 },
-				{ id: 'ledger-node', label: 'General ledger', icon: Database, stageIndex: 7 }
+				{ id: 'subledger-node', label: 'Subledgers', icon: Layers3, stageIndex: 10 },
+				{ id: 'journal-node', label: 'Journal entries', icon: FileText, stageIndex: 11 },
+				{ id: 'matching-node', label: 'Match and settle', icon: PackageCheck, stageIndex: 12 },
+				{ id: 'ledger-node', label: 'General ledger', icon: Database, stageIndex: 13 }
 			]
 		},
 		{
 			id: 'close',
 			label: 'Close',
 			icon: Table2,
+			stageIndex: 3,
 			children: [
-				{ id: 'cutoff-node', label: 'Cutoff', icon: SearchCheck, stageIndex: 8 },
-				{ id: 'adjustments-node', label: 'Adjustments', icon: Calculator, stageIndex: 9 },
+				{ id: 'cutoff-node', label: 'Cutoff', icon: SearchCheck, stageIndex: 14 },
+				{ id: 'adjustments-node', label: 'Adjustments', icon: Calculator, stageIndex: 15 },
 				{
 					id: 'reconciliations-node',
 					label: 'Reconciliations',
 					icon: ClipboardCheck,
-					stageIndex: 10
+					stageIndex: 16
 				},
-				{ id: 'trial-node', label: 'Trial balance', icon: Table2, stageIndex: 11 },
-				{ id: 'consolidation-node', label: 'Consolidation', icon: Network, stageIndex: 12 }
+				{ id: 'trial-node', label: 'Trial balance', icon: Table2, stageIndex: 17 },
+				{ id: 'consolidation-node', label: 'Consolidation', icon: Network, stageIndex: 18 }
 			]
 		},
 		{
 			id: 'report',
 			label: 'Report',
 			icon: Landmark,
+			stageIndex: 4,
 			children: [
-				{ id: 'mapping-node', label: 'Statement mapping', icon: Workflow, stageIndex: 13 },
-				{ id: 'statements-node', label: 'Statements', icon: Landmark, stageIndex: 14 },
-				{ id: 'cash-flow-node', label: 'Cash flow', icon: Banknote, stageIndex: 15 },
-				{ id: 'disclosures-node', label: 'Disclosures', icon: BookOpen, stageIndex: 16 }
+				{ id: 'mapping-node', label: 'Statement mapping', icon: Workflow, stageIndex: 19 },
+				{ id: 'statements-node', label: 'Statements', icon: Landmark, stageIndex: 20 },
+				{ id: 'cash-flow-node', label: 'Cash flow', icon: Banknote, stageIndex: 21 },
+				{ id: 'disclosures-node', label: 'Disclosures', icon: BookOpen, stageIndex: 22 }
 			]
 		},
 		{
 			id: 'assure',
 			label: 'Assure and file',
 			icon: ShieldCheck,
+			stageIndex: 5,
 			children: [
-				{ id: 'tie-out-node', label: 'Stick and tie', icon: Tags, stageIndex: 17 },
-				{ id: 'controls-node', label: 'Controls', icon: ShieldCheck, stageIndex: 18 },
-				{ id: 'audit-node', label: 'Audit evidence', icon: FileCheck2, stageIndex: 19 },
-				{ id: 'filing-node', label: 'Filing package', icon: ScrollText, stageIndex: 20 },
-				{ id: 'debrief-node', label: 'Debrief', icon: ListChecks, stageIndex: 21 }
+				{ id: 'tie-out-node', label: 'Stick and tie', icon: Tags, stageIndex: 23 },
+				{ id: 'controls-node', label: 'Controls', icon: ShieldCheck, stageIndex: 24 },
+				{ id: 'audit-node', label: 'Audit evidence', icon: FileCheck2, stageIndex: 25 },
+				{ id: 'filing-node', label: 'Filing package', icon: ScrollText, stageIndex: 26 },
+				{ id: 'debrief-node', label: 'Debrief', icon: ListChecks, stageIndex: 27 }
 			]
 		}
 	];
@@ -1834,8 +1996,9 @@
 	];
 
 	let activeIndex = $state(0);
-	let activeTocId = $state('setup-node');
+	let activeTocId = $state('home-node');
 	let mode: Mode = $state('watch');
+	let demoStep = $state(0);
 	let theme: Theme = $state('night');
 	let sidebarOpen = $state(false);
 	let expandedSections = $state<string[]>(['foundation']);
@@ -1868,6 +2031,8 @@
 	const selectedAudit = $derived(
 		auditRequests.find((request) => request.id === selectedAuditId) ?? auditRequests[0]
 	);
+	const activeDemoSteps = $derived(demoStepsFor(activeStage));
+	const activeDemoStep = $derived(activeDemoSteps[demoStep] ?? activeDemoSteps[0]);
 	const statementSections = $derived.by(() => {
 		if (statementTab === 'income') return incomeStatement;
 		if (statementTab === 'cash') return cashFlowStatement;
@@ -1897,12 +2062,14 @@
 
 	function firstTocIdForStage(index: number) {
 		for (const section of tocSections) {
+			if (section.stageIndex === index) return section.id;
+
 			const child = section.children?.find((item) => item.stageIndex === index);
 
 			if (child) return child.id;
 		}
 
-		return tocSections[0].children?.[0]?.id ?? tocSections[0].id;
+		return tocSections[0].id;
 	}
 
 	function sectionIdForTocId(tocId: string) {
@@ -1917,19 +2084,21 @@
 
 	function expandTocForItem(tocId: string) {
 		const sectionId = sectionIdForTocId(tocId);
+		const section = tocSections.find((item) => item.id === sectionId);
 
-		if (sectionId && !expandedSections.includes(sectionId)) {
+		if (sectionId && section?.children && !expandedSections.includes(sectionId)) {
 			expandedSections = [...expandedSections, sectionId];
 		}
 	}
 
-	function chooseStage(index: number, tocId = firstTocIdForStage(index)) {
+	function chooseStage(index: number, tocId = firstTocIdForStage(index), expand = true) {
 		activeIndex = index;
 		activeTocId = tocId;
+		demoStep = 0;
 		traceIndex = 0;
 		supportVisible = false;
 		issueResolved = false;
-		expandTocForItem(tocId);
+		if (expand) expandTocForItem(tocId);
 		flyoutSection = null;
 	}
 
@@ -1945,28 +2114,29 @@
 		flyoutSection = null;
 	}
 
-	function toggleTocSection(id: string) {
-		if (expandedSections.includes(id)) {
-			expandedSections = expandedSections.filter((sectionId) => sectionId !== id);
-		} else {
-			expandedSections = [...expandedSections, id];
-		}
-	}
-
 	function navigateToc(item: TocItem) {
+		if (item.children) {
+			const wasExpanded = expandedSections.includes(item.id);
+
+			if (item.stageIndex !== undefined) {
+				chooseStage(item.stageIndex, item.id, false);
+			}
+
+			expandedSections = wasExpanded
+				? expandedSections.filter((sectionId) => sectionId !== item.id)
+				: [...expandedSections, item.id];
+			return;
+		}
+
 		if (item.stageIndex !== undefined) {
 			chooseStage(item.stageIndex, item.id);
-		}
-
-		if (item.children && !expandedSections.includes(item.id)) {
-			expandedSections = [...expandedSections, item.id];
 		}
 	}
 
 	function openFlyout(sectionId: string, event: MouseEvent) {
 		const button = event.currentTarget as HTMLElement;
 		flyoutY = button.getBoundingClientRect().top;
-		flyoutSection = flyoutSection === sectionId ? null : sectionId;
+		flyoutSection = sectionId;
 	}
 
 	function closeFlyout() {
@@ -1985,85 +2155,138 @@
 		}
 	}
 
-	function cycleValue<T>(items: T[], current: T) {
-		const index = items.indexOf(current);
-		return items[(index + 1) % items.length];
+	function demoStepsFor(stage: Stage): DemoStep[] {
+		if (stage.id === 'home') {
+			return [
+				{
+					label: 'Start with evidence',
+					detail: 'A $12,000 invoice is not a final reporting number yet. It begins as a supported business event.'
+				},
+				{
+					label: 'Record the obligation',
+					detail: 'The supported invoice creates AR and deferred revenue because Nimbus still owes future service.'
+				},
+				{
+					label: 'Report and file',
+					detail: 'One month becomes revenue, the remaining liability flows to statements, notes, tie-out, and filing facts.'
+				}
+			];
+		}
+
+		if (stage.id.endsWith('-overview')) {
+			return [
+				{ label: 'Orient', detail: stage.watchPrompt },
+				{
+					label: 'Inspect the artifacts',
+					detail: 'The roadmap highlights the documents, records, controls, and reporting objects this section will use.'
+				},
+				{
+					label: 'Follow the trace',
+					detail: 'The same transaction remains connected to source evidence, accounting judgment, ledgers, reports, and review evidence.'
+				}
+			];
+		}
+
+		return [
+			{ label: 'Open the artifact', detail: stage.watchPrompt },
+			{
+				label: 'Apply the accounting step',
+				detail: 'The workbench updates the selected accounting artifact and exposes the downstream effect.'
+			},
+			{
+				label: 'Check the trace',
+				detail: 'The number, document, or decision is ready to be followed forward or backward in the cycle.'
+			}
+		];
 	}
 
-	function playStage() {
-		if (activeStage.id === 'events') {
-			selectedEventId = cycleValue(
-				eventQueue.map((event) => event.id),
-				selectedEventId
-			);
+	function applyDemoState(stageId: StageId, step: number) {
+		supportVisible = step > 1;
+		issueResolved = false;
+		traceIndex = Math.min(step, traceNodes.length - 1);
+
+		if (stageId === 'events') {
+			selectedEventId = eventQueue[Math.min(step, eventQueue.length - 1)]?.id ?? selectedEventId;
+		}
+
+		if (stageId === 'evidence' || stageId === 'trial' || stageId === 'mapping') {
+			supportVisible = step > 0;
+		}
+
+		if (stageId === 'judgment' || stageId === 'journal') {
+			selectedTreatment = step > 0 ? 'over-time' : 'immediate';
+		}
+
+		if (stageId === 'subledger') {
+			selectedSubledger = subledgerTabs[Math.min(step, subledgerTabs.length - 1)]?.id ?? selectedSubledger;
 		}
 
 		if (
-			activeStage.id === 'evidence' ||
-			activeStage.id === 'trial' ||
-			activeStage.id === 'mapping'
+			stageId === 'matching' ||
+			stageId === 'cutoff' ||
+			stageId === 'adjustments' ||
+			stageId === 'reconciliations' ||
+			stageId === 'tie-out' ||
+			stageId === 'controls'
 		) {
-			supportVisible = true;
+			issueResolved = step > 1;
 		}
+
+		if (stageId === 'ledger') {
+			selectedLedgerAccount =
+				ledgerAccounts[Math.min(step, ledgerAccounts.length - 1)]?.account ?? selectedLedgerAccount;
+		}
+
+		if (stageId === 'statements') {
+			statementTab = ['balance', 'income', 'cash', 'equity'][
+				Math.min(step, 3)
+			] as StatementTab;
+		}
+
+		if (stageId === 'cash-flow') {
+			cashFocus = Math.min(step, cashBridge.length - 1);
+		}
+
+		if (stageId === 'disclosures') {
+			disclosureTab = disclosures[Math.min(step, disclosures.length - 1)]?.id ?? disclosureTab;
+		}
+
+		if (stageId === 'audit') {
+			selectedAuditId = auditRequests[Math.min(step, auditRequests.length - 1)]?.id ?? selectedAuditId;
+		}
+
+		if (stageId === 'filing') {
+			filingStep = Math.min(step, filingSections.length - 1);
+		}
+	}
+
+	function setDemoMode(nextMode: Mode) {
+		mode = nextMode;
+		demoStep = 0;
+		applyDemoState(activeStage.id, 0);
+	}
+
+	function setDemoStep(nextStep: number) {
+		demoStep = Math.max(0, Math.min(nextStep, activeDemoSteps.length - 1));
+		applyDemoState(activeStage.id, demoStep);
+	}
+
+	function resetDemo() {
+		setDemoStep(0);
+	}
+
+	function checkPractice() {
+		issueResolved = true;
+		supportVisible = true;
 
 		if (activeStage.id === 'judgment' || activeStage.id === 'journal') {
 			selectedTreatment = 'over-time';
 		}
+	}
 
-		if (activeStage.id === 'subledger') {
-			selectedSubledger = cycleValue(
-				subledgerTabs.map((tab) => tab.id),
-				selectedSubledger
-			);
-		}
-
-		if (
-			activeStage.id === 'matching' ||
-			activeStage.id === 'cutoff' ||
-			activeStage.id === 'adjustments' ||
-			activeStage.id === 'reconciliations' ||
-			activeStage.id === 'tie-out' ||
-			activeStage.id === 'controls'
-		) {
-			issueResolved = true;
-		}
-
-		if (activeStage.id === 'ledger') {
-			selectedLedgerAccount = cycleValue(
-				ledgerAccounts.map((ledger) => ledger.account),
-				selectedLedgerAccount
-			);
-		}
-
-		if (activeStage.id === 'statements') {
-			statementTab = cycleValue(['balance', 'income', 'cash', 'equity'], statementTab);
-		}
-
-		if (activeStage.id === 'cash-flow') {
-			cashFocus = (cashFocus + 1) % cashBridge.length;
-		}
-
-		if (activeStage.id === 'disclosures') {
-			disclosureTab = cycleValue(
-				disclosures.map((disclosure) => disclosure.id),
-				disclosureTab
-			);
-		}
-
-		if (activeStage.id === 'audit') {
-			selectedAuditId = cycleValue(
-				auditRequests.map((request) => request.id),
-				selectedAuditId
-			);
-		}
-
-		if (activeStage.id === 'filing') {
-			filingStep = (filingStep + 1) % filingSections.length;
-		}
-
-		if (activeStage.id === 'filing' || activeStage.id === 'debrief') {
-			traceIndex = traceIndex >= traceNodes.length - 1 ? 0 : traceIndex + 1;
-		}
+	function showPracticeAnswer() {
+		setDemoStep(activeDemoSteps.length - 1);
+		checkPractice();
 	}
 
 	onMount(() => {
@@ -2190,21 +2413,13 @@
 						<button type="button" class="toc-main" onclick={() => navigateToc(section)}>
 							{@render tocIcon(section, active, 16)}
 							<span>{section.label}</span>
-						</button>
-
-						<button
-							type="button"
-							class="toc-expand"
-							aria-label={expandedSections.includes(section.id)
-								? 'Collapse section'
-								: 'Expand section'}
-							onclick={() => toggleTocSection(section.id)}
-						>
-							<ChevronRight
-								size={13}
-								strokeWidth={2.2}
-								style={`transform: ${expandedSections.includes(section.id) ? 'rotate(90deg)' : 'rotate(0deg)'}`}
-							/>
+							{#if section.children}
+								<ChevronRight
+									size={13}
+									strokeWidth={2.2}
+									style={`transform: ${expandedSections.includes(section.id) ? 'rotate(90deg)' : 'rotate(0deg)'}`}
+								/>
+							{/if}
 						</button>
 					</div>
 
@@ -2289,33 +2504,13 @@
 	{/if}
 
 	<div
-		class="content-shell"
+		class={['content-shell', !sidebarOpen && 'sidebar-compact']}
 		style:margin-left={sidebarOpen ? 'var(--sidebar-width)' : 'var(--sidebar-collapsed-width)'}
 	>
 		<section class="workspace-shell">
 			<aside class="lesson-panel" aria-labelledby="lesson-title">
 				<div class="lesson-kicker">
-					<span><ActiveIcon size={15} strokeWidth={2.5} /> Stage {activeStage.number}</span>
-					<div class="mode-switch" aria-label="Demo mode">
-						<button
-							type="button"
-							class={mode === 'watch' ? 'active' : ''}
-							aria-pressed={mode === 'watch'}
-							onclick={() => (mode = 'watch')}
-						>
-							<Eye size={15} strokeWidth={2.4} />
-							Watch
-						</button>
-						<button
-							type="button"
-							class={mode === 'do' ? 'active' : ''}
-							aria-pressed={mode === 'do'}
-							onclick={() => (mode = 'do')}
-						>
-							<Hand size={15} strokeWidth={2.4} />
-							Do
-						</button>
-					</div>
+					<span><ActiveIcon size={15} strokeWidth={2.5} /> Step {String(activeIndex).padStart(2, '0')}</span>
 				</div>
 
 				<h1 id="lesson-title">{activeStage.title}</h1>
@@ -2349,19 +2544,6 @@
 					<strong>Key point</strong>
 					<span>{activeStage.keyPoint}</span>
 				</div>
-
-				<div class="lesson-block mode-copy">
-					<h2>
-						{#if mode === 'watch'}
-							<Eye size={16} strokeWidth={2.3} />
-							Watch
-						{:else}
-							<Hand size={16} strokeWidth={2.3} />
-							Do
-						{/if}
-					</h2>
-					<p>{mode === 'watch' ? activeStage.watchPrompt : activeStage.doPrompt}</p>
-				</div>
 			</aside>
 
 			<section class="process-panel" aria-label={activeStage.workspace}>
@@ -2374,14 +2556,114 @@
 						</span>
 					</div>
 
-					<button type="button" class="play-button" onclick={playStage}>
-						<Play size={17} strokeWidth={2.5} />
-						Play step
-					</button>
+					<div class="demo-toolbar">
+						<div class="mode-switch" aria-label="Demo mode">
+							<button
+								type="button"
+								class={mode === 'watch' ? 'active' : ''}
+								aria-pressed={mode === 'watch'}
+								onclick={() => setDemoMode('watch')}
+							>
+								<Eye size={15} strokeWidth={2.4} />
+								Watch
+							</button>
+							<button
+								type="button"
+								class={mode === 'do' ? 'active' : ''}
+								aria-pressed={mode === 'do'}
+								onclick={() => setDemoMode('do')}
+							>
+								<Hand size={15} strokeWidth={2.4} />
+								Do
+							</button>
+						</div>
+
+						{#if mode === 'watch'}
+							<div class="step-controls" aria-label="Watch controls">
+								<button type="button" onclick={() => setDemoStep(demoStep - 1)} disabled={demoStep === 0}>
+									<ArrowLeft size={14} strokeWidth={2.4} />
+								</button>
+								<span>{demoStep + 1} / {activeDemoSteps.length}</span>
+								<button
+									type="button"
+									onclick={() => setDemoStep(demoStep + 1)}
+									disabled={demoStep === activeDemoSteps.length - 1}
+								>
+									<ArrowRight size={14} strokeWidth={2.4} />
+								</button>
+								<button type="button" onclick={resetDemo} aria-label="Reset watch demo">
+									<RotateCcw size={14} strokeWidth={2.4} />
+								</button>
+							</div>
+						{/if}
+					</div>
+				</div>
+
+				<div class={['demo-guidance', mode]}>
+					<div>
+						<small>{mode === 'watch' ? 'Watch step' : 'Do task'}</small>
+						<strong>{mode === 'watch' ? activeDemoStep.label : 'Practice the accounting move'}</strong>
+						<p>{mode === 'watch' ? activeDemoStep.detail : activeStage.doPrompt}</p>
+					</div>
+
+					{#if mode === 'do'}
+						<div class="practice-actions">
+							<button type="button" onclick={checkPractice}>
+								<CheckCircle2 size={15} strokeWidth={2.4} />
+								Check
+							</button>
+							<button type="button" onclick={showPracticeAnswer}>Show answer</button>
+							<button type="button" onclick={resetDemo} aria-label="Reset practice">
+								<RotateCcw size={14} strokeWidth={2.4} />
+							</button>
+						</div>
+					{/if}
 				</div>
 
 				<div class="artifact-body">
-					{#if activeStage.id === 'setup'}
+					{#if activeStage.id === 'home'}
+						<section class="home-workspace">
+							<div class="journey-number">
+								<small>Follow the number</small>
+								<strong>$12,000</strong>
+								<span>Annual fleet maintenance invoice</span>
+							</div>
+							<div class="journey-map">
+								{#each traceNodes as node, index (node.label)}
+									<button
+										type="button"
+										class={traceIndex === index ? 'active' : ''}
+										onclick={() => (traceIndex = index)}
+									>
+										<span>{String(index + 1).padStart(2, '0')}</span>
+										<strong>{node.label}</strong>
+										<small>{node.value}</small>
+									</button>
+								{/each}
+							</div>
+							<p class="trace-panel">{traceNodes[traceIndex].detail}</p>
+						</section>
+					{:else if activeStage.id.endsWith('-overview')}
+						<section class="overview-workspace">
+							<div class="overview-card">
+								<small>{activeStage.group}</small>
+								<strong>{activeStage.workspace}</strong>
+								<p>{activeStage.lesson}</p>
+							</div>
+							<div class="overview-steps">
+								{#each activeStage.notice as point, index (point)}
+									<div>
+										<span>{String(index + 1).padStart(2, '0')}</span>
+										<p>{point}</p>
+									</div>
+								{/each}
+							</div>
+							<div class="trace-panel">
+								<strong>What this section produces</strong>
+								<p>{activeStage.keyPoint}</p>
+							</div>
+						</section>
+					{:else if activeStage.id === 'setup'}
 						<section class="system-map">
 							<div class="node-grid">
 								{#each systemNodes as node (node.label)}
@@ -3060,13 +3342,18 @@
 		</section>
 
 		<footer class="sequence-bar" aria-label="Stage navigation">
-			<button type="button" onclick={previousStage} disabled={activeIndex === 0}>
+			<button type="button" class="sequence-button" onclick={previousStage} disabled={activeIndex === 0}>
 				<ArrowLeft size={17} strokeWidth={2.4} />
-				Previous
+				<span>Previous</span>
 			</button>
-			<span>{activeStage.number} of {String(stages.length - 1).padStart(2, '0')}</span>
-			<button type="button" onclick={nextStage} disabled={activeIndex === stages.length - 1}>
-				Next
+			<span>{String(activeIndex + 1).padStart(2, '0')} of {String(stages.length).padStart(2, '0')}</span>
+			<button
+				type="button"
+				class="sequence-button next"
+				onclick={nextStage}
+				disabled={activeIndex === stages.length - 1}
+			>
+				<span>Next</span>
 				<ArrowRight size={17} strokeWidth={2.4} />
 			</button>
 		</footer>
@@ -3099,7 +3386,7 @@
 		--red: #a73d35;
 		--sidebar-width: 280px;
 		--sidebar-collapsed-width: 52px;
-		--header-height: 52px;
+		--header-height: 44px;
 		position: relative;
 		height: 100vh;
 		overflow: hidden;
@@ -3178,7 +3465,7 @@
 		justify-content: space-between;
 		height: var(--header-height);
 		border-bottom: 1px solid var(--line);
-		padding: 8px 16px;
+		padding: 6px 14px;
 		background: color-mix(in srgb, var(--surface) 72%, transparent);
 		backdrop-filter: blur(24px) saturate(1.35);
 		-webkit-backdrop-filter: blur(24px) saturate(1.35);
@@ -3202,13 +3489,13 @@
 	}
 
 	.brand strong {
-		font-size: 0.94rem;
+		font-size: 0.9rem;
 	}
 
 	.theme-toggle {
 		justify-content: center;
-		width: 30px;
-		min-height: 30px;
+		width: 28px;
+		min-height: 28px;
 		color: var(--muted);
 		background: transparent;
 	}
@@ -3328,18 +3615,13 @@
 
 	.toc-main {
 		flex: 1;
+		justify-content: flex-start;
 		padding: 10px 8px 10px 12px;
 		font-weight: 800;
 	}
 
-	.toc-expand {
-		display: grid;
-		place-items: center;
-		width: 28px;
-		height: 28px;
-		border-radius: 6px;
-		color: var(--muted);
-		background: transparent;
+	.toc-main > span {
+		flex: 1;
 	}
 
 	.toc-children {
@@ -3420,6 +3702,7 @@
 	}
 
 	.content-shell {
+		--lesson-column: clamp(360px, 31vw, 500px);
 		display: grid;
 		grid-template-rows: minmax(0, 1fr) auto;
 		height: 100vh;
@@ -3427,9 +3710,13 @@
 		transition: margin-left 180ms ease;
 	}
 
+	.content-shell.sidebar-compact {
+		--lesson-column: clamp(480px, 38vw, 660px);
+	}
+
 	.workspace-shell {
 		display: grid;
-		grid-template-columns: clamp(360px, 31vw, 500px) minmax(0, 1fr);
+		grid-template-columns: var(--lesson-column) minmax(0, 1fr);
 		min-height: 0;
 	}
 
@@ -3456,19 +3743,22 @@
 
 	.lesson-panel {
 		border-right: 1px solid var(--line);
-		padding: clamp(22px, 3vw, 42px);
+		padding: clamp(22px, 3vw, 36px);
 		background: color-mix(in srgb, var(--surface) 46%, transparent);
 	}
 
 	.process-panel {
-		padding: clamp(22px, 3vw, 42px);
+		padding: clamp(20px, 2.6vw, 34px);
 		background: color-mix(in srgb, var(--bg) 94%, var(--surface) 6%);
 	}
 
 	.lesson-kicker,
 	.process-header,
 	.artifact-title,
+	.demo-toolbar,
 	.mode-switch,
+	.step-controls,
+	.practice-actions,
 	.sequence-bar,
 	.status-pill,
 	.tabs,
@@ -3510,8 +3800,9 @@
 	}
 
 	.mode-switch button,
+	.step-controls button,
+	.practice-actions button,
 	.tabs button,
-	.play-button,
 	.primary-action,
 	.choice-stack button,
 	.lane {
@@ -3520,15 +3811,43 @@
 		background: color-mix(in srgb, var(--surface-strong) 70%, transparent);
 	}
 
-	.mode-switch button,
-	.play-button {
+	.mode-switch button {
 		display: inline-flex;
 		gap: 8px;
 		align-items: center;
 		justify-content: center;
-		min-height: 36px;
-		padding: 0 14px;
+		min-height: 32px;
+		padding: 0 12px;
 		font-weight: 850;
+	}
+
+	.demo-toolbar {
+		justify-content: flex-end;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.step-controls,
+	.practice-actions {
+		gap: 6px;
+	}
+
+	.step-controls button,
+	.practice-actions button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 32px;
+		padding: 0 10px;
+		font-size: 0.82rem;
+		font-weight: 850;
+	}
+
+	.step-controls span {
+		color: var(--muted);
+		font-size: 0.78rem;
+		font-weight: 900;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.mode-switch button.active,
@@ -3540,17 +3859,17 @@
 	}
 
 	h1 {
-		max-width: 13ch;
-		margin: clamp(22px, 5vw, 42px) 0 8px;
-		font-size: clamp(2.2rem, 4.6vw, 3.65rem);
-		line-height: 1;
+		max-width: 20ch;
+		margin: clamp(18px, 3vw, 30px) 0 8px;
+		font-size: clamp(1.9rem, 2.9vw, 2.8rem);
+		line-height: 1.04;
 		letter-spacing: 0;
 	}
 
 	.question {
-		margin: 0 0 26px;
+		margin: 0 0 22px;
 		color: var(--accent);
-		font-size: clamp(1.08rem, 2vw, 1.35rem);
+		font-size: clamp(1rem, 1.45vw, 1.18rem);
 		font-weight: 850;
 		line-height: 1.25;
 	}
@@ -3621,9 +3940,41 @@
 		font-size: 1rem;
 	}
 
-	.play-button {
-		background: var(--gold);
-		color: #14110a;
+	.demo-guidance {
+		display: flex;
+		justify-content: space-between;
+		gap: 18px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		margin-top: 18px;
+		padding: 14px 16px;
+		background: color-mix(in srgb, var(--surface) 70%, transparent);
+	}
+
+	.demo-guidance small {
+		color: var(--accent-2);
+		font-size: 0.68rem;
+		font-weight: 950;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+
+	.demo-guidance strong {
+		display: block;
+		margin: 3px 0;
+		font-size: 0.98rem;
+	}
+
+	.demo-guidance p {
+		max-width: 76ch;
+		margin: 0;
+		color: var(--muted);
+		line-height: 1.45;
+	}
+
+	.demo-guidance.do {
+		border-color: color-mix(in srgb, var(--gold) 46%, var(--line));
+		background: color-mix(in srgb, var(--gold) 8%, var(--surface));
 	}
 
 	.artifact-body {
@@ -3631,6 +3982,8 @@
 	}
 
 	.system-map,
+	.home-workspace,
+	.overview-workspace,
 	.evidence-packet,
 	.judgment-tree,
 	.event-board,
@@ -3650,6 +4003,8 @@
 	}
 
 	.system-node,
+	.journey-number,
+	.overview-card,
 	.metric-card,
 	.entity-card,
 	.elimination-card,
@@ -3666,6 +4021,8 @@
 	}
 
 	.system-node strong,
+	.journey-number strong,
+	.overview-card strong,
 	.metric-card strong,
 	.entity-card strong,
 	.elimination-card strong,
@@ -3677,7 +4034,13 @@
 		font-size: 1.1rem;
 	}
 
+	.journey-number strong {
+		font-size: clamp(2.4rem, 6vw, 5rem);
+		line-height: 0.95;
+	}
+
 	.system-node span,
+	.journey-number span,
 	.metric-card span,
 	.entity-card span,
 	.elimination-card span,
@@ -3685,6 +4048,44 @@
 	.filing-cover span,
 	.document-row p {
 		color: var(--muted);
+	}
+
+	.journey-map,
+	.overview-steps {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	.journey-map button,
+	.overview-steps div {
+		display: grid;
+		gap: 5px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 13px;
+		background: color-mix(in srgb, var(--surface) 74%, transparent);
+		text-align: left;
+	}
+
+	.journey-map button.active {
+		border-color: color-mix(in srgb, var(--accent) 58%, transparent);
+		background: color-mix(in srgb, var(--accent) 11%, transparent);
+	}
+
+	.journey-map span,
+	.overview-steps span {
+		color: var(--accent);
+		font-size: 0.74rem;
+		font-weight: 950;
+	}
+
+	.journey-map small,
+	.overview-card p,
+	.overview-steps p {
+		margin: 0;
+		color: var(--muted);
+		line-height: 1.45;
 	}
 
 	.workpaper-table,
@@ -4026,8 +4427,8 @@
 	.sequence-bar {
 		justify-content: space-between;
 		border-top: 1px solid var(--line);
-		min-height: 44px;
-		padding: 4px 18px;
+		min-height: 36px;
+		padding: 3px 14px;
 		background: color-mix(in srgb, var(--surface) 88%, transparent);
 		backdrop-filter: blur(20px) saturate(1.25);
 		-webkit-backdrop-filter: blur(20px) saturate(1.25);
@@ -4039,17 +4440,17 @@
 		font-weight: 850;
 	}
 
-	.sequence-bar button {
+	.sequence-button {
 		display: inline-flex;
-		gap: 8px;
+		gap: 7px;
 		align-items: center;
-		min-height: 30px;
+		min-height: 28px;
 		background: transparent;
 		color: var(--muted);
 		font-weight: 850;
 	}
 
-	.sequence-bar button:not(:disabled):hover {
+	.sequence-button:not(:disabled):hover {
 		color: var(--accent);
 	}
 
@@ -4088,7 +4489,7 @@
 
 	@media (max-width: 760px) {
 		.simulator {
-			--header-height: 50px;
+			--header-height: 44px;
 		}
 
 		.masthead {
@@ -4106,11 +4507,12 @@
 
 		h1 {
 			max-width: none;
-			font-size: clamp(2rem, 11vw, 3rem);
+			font-size: clamp(1.9rem, 9vw, 2.7rem);
 		}
 
 		.lesson-kicker,
 		.process-header,
+		.demo-guidance,
 		.document-row,
 		.filing-builder {
 			align-items: stretch;
@@ -4123,6 +4525,8 @@
 		}
 
 		.node-grid,
+		.journey-map,
+		.overview-steps,
 		.event-board,
 		.judgment-tree,
 		.journal-grid,
