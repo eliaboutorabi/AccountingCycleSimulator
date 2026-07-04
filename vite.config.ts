@@ -4,6 +4,21 @@ import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 
+function getBasePath(): '' | `/${string}` {
+	const value = process.env.BASE_PATH?.trim();
+
+	if (!value || value === '/') {
+		return '';
+	}
+
+	const withLeadingSlash = value.startsWith('/') ? value : `/${value}`;
+	const withoutTrailingSlash = withLeadingSlash.replace(/\/+$/, '');
+
+	return withoutTrailingSlash as `/${string}`;
+}
+
+const basePath = getBasePath();
+
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
@@ -13,7 +28,12 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter()
+			adapter: adapter({
+				fallback: '404.html'
+			}),
+			paths: {
+				base: basePath
+			}
 		})
 	],
 	test: {

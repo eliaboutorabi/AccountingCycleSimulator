@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { resolve } from '$app/paths';
+	import { asset } from '$app/paths';
 	import { nimbusScenario } from '$lib/accounting-cycle/nimbus';
 	import type { CycleArcId } from '$lib/accounting-cycle/model';
 	import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
@@ -21,6 +21,7 @@
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Gavel from '@lucide/svelte/icons/gavel';
 	import GitBranch from '@lucide/svelte/icons/git-branch';
+	import Globe from '@lucide/svelte/icons/globe';
 	import Hand from '@lucide/svelte/icons/hand';
 	import Landmark from '@lucide/svelte/icons/landmark';
 	import Layers3 from '@lucide/svelte/icons/layers-3';
@@ -145,7 +146,8 @@
 				'Jumping straight to debits and credits without asking what happened, what proves it, and what policy governs it.',
 			keyPoint: 'The promise of the app is traceability: every material number has a trail.',
 			watchPrompt: 'Watch the $12,000 subscription move from source document to filing fact.',
-			doPrompt: 'Choose a point in the cycle and inspect what evidence or accounting object supports it.'
+			doPrompt:
+				'Choose a point in the cycle and inspect what evidence or accounting object supports it.'
 		},
 		{
 			id: 'foundation-overview',
@@ -189,7 +191,8 @@
 			],
 			example:
 				'The same subscription creates AR, deferred revenue, a revenue schedule, cash application, and GL activity.',
-			mistake: 'Thinking a balanced journal entry is enough when support, period, and account choice are wrong.',
+			mistake:
+				'Thinking a balanced journal entry is enough when support, period, and account choice are wrong.',
 			keyPoint: 'Recording is a controlled translation, not a typing exercise.',
 			watchPrompt: 'Watch the transaction move through subledger, journal, matching, and GL.',
 			doPrompt: 'Choose the accounting record that should be created next.'
@@ -214,7 +217,8 @@
 				'Nimbus accrues received-not-invoiced inventory, releases one month of revenue, posts depreciation, reconciles the subledgers, and reviews the adjusted TB.',
 			mistake: 'Calling the close done because debits equal credits.',
 			keyPoint: 'Close work proves the period, not just the math.',
-			watchPrompt: 'Watch cutoff, adjustments, reconciliations, trial balance, and consolidation prepare reporting.',
+			watchPrompt:
+				'Watch cutoff, adjustments, reconciliations, trial balance, and consolidation prepare reporting.',
 			doPrompt: 'Identify the open close blocker before statements can be prepared.'
 		},
 		{
@@ -235,7 +239,8 @@
 			],
 			example:
 				'Deferred revenue appears as a liability on the balance sheet, a rollforward in the notes, and an explanation in the revenue policy disclosure.',
-			mistake: 'Preparing attractive statement tables that cannot be traced back to the ledger and notes.',
+			mistake:
+				'Preparing attractive statement tables that cannot be traced back to the ledger and notes.',
 			keyPoint: 'Reporting is structured communication backed by accounting evidence.',
 			watchPrompt: 'Watch statement mapping, the binder, cash flow, and disclosures tie together.',
 			doPrompt: 'Select the reporting artifact that proves a statement line.'
@@ -258,9 +263,11 @@
 			],
 			example:
 				'Nimbus cannot mark the mock 10-Q ready while a revenue tie-out, manual journal approval, or XBRL tag review remains unresolved.',
-			mistake: 'Treating filing as a final export instead of the final page of a controlled reporting process.',
+			mistake:
+				'Treating filing as a final export instead of the final page of a controlled reporting process.',
 			keyPoint: 'Assurance is traceability tested from several angles.',
-			watchPrompt: 'Watch tie-out, controls, audit requests, filing assembly, and debrief move toward readiness.',
+			watchPrompt:
+				'Watch tie-out, controls, audit requests, filing assembly, and debrief move toward readiness.',
 			doPrompt: 'Clear the blocker that keeps the filing package from being ready.'
 		},
 		{
@@ -1016,19 +1023,23 @@
 	const triageLanes = [
 		{
 			label: 'Record now',
-			description: 'Recognition criteria are met in this period and a supported entry is needed now.'
+			description:
+				'Recognition criteria are met in this period and a supported entry is needed now.'
 		},
 		{
 			label: 'Record later',
-			description: 'Evidence exists, but recognition waits for performance, delivery, receipt, or passage of time.'
+			description:
+				'Evidence exists, but recognition waits for performance, delivery, receipt, or passage of time.'
 		},
 		{
 			label: 'Monitor',
-			description: 'The event is operationally relevant but does not yet create an accounting record.'
+			description:
+				'The event is operationally relevant but does not yet create an accounting record.'
 		},
 		{
 			label: 'Disclose / monitor',
-			description: 'The event may affect disclosure, risk, or estimates even when no entry is posted yet.'
+			description:
+				'The event may affect disclosure, risk, or estimates even when no entry is posted yet.'
 		}
 	] satisfies { label: EventLane; description: string }[];
 
@@ -1042,8 +1053,10 @@
 			evidence: 'C-1001 / INV-1001',
 			lane: 'Record later' as EventLane,
 			trigger: 'Contract signed and invoice issued for a 12-month stand-ready maintenance service.',
-			accountingQuestion: 'Has Nimbus earned revenue on day one, or only created a receivable and contract liability?',
-			entryImpact: 'Debit accounts receivable and credit deferred revenue. Release revenue monthly as service is provided.',
+			accountingQuestion:
+				'Has Nimbus earned revenue on day one, or only created a receivable and contract liability?',
+			entryImpact:
+				'Debit accounts receivable and credit deferred revenue. Release revenue monthly as service is provided.',
 			control: 'Revenue policy review and contract-to-invoice tie-out',
 			answer: 'Track contract, bill AR, defer revenue, recognize monthly'
 		},
@@ -1057,7 +1070,8 @@
 			lane: 'Record now' as EventLane,
 			trigger: 'Goods shipped FOB shipping point and invoice issued before January close.',
 			accountingQuestion: 'Did control transfer to the customer before period end?',
-			entryImpact: 'Record product revenue and AR. Record COGS and relieve inventory from the subledger.',
+			entryImpact:
+				'Record product revenue and AR. Record COGS and relieve inventory from the subledger.',
 			control: 'Shipping document matched to invoice and sales order',
 			answer: 'Record product revenue, AR, COGS, and inventory relief'
 		},
@@ -1071,7 +1085,8 @@
 			lane: 'Monitor' as EventLane,
 			trigger: 'Purchase order approved, but no goods received and no vendor invoice accepted.',
 			accountingQuestion: 'Does a purchase order alone create a present obligation?',
-			entryImpact: 'No journal entry yet. Keep the PO open for receiving, accrual, and cutoff review.',
+			entryImpact:
+				'No journal entry yet. Keep the PO open for receiving, accrual, and cutoff review.',
 			control: 'Three-way match waits for receiving report or vendor bill',
 			answer: 'No entry until goods are received or invoice creates obligation'
 		},
@@ -1083,9 +1098,12 @@
 			amount: 'Range not estimable',
 			evidence: 'LEGAL-04',
 			lane: 'Disclose / monitor' as EventLane,
-			trigger: 'Counsel says an early customer claim is possible, but loss is not probable or estimable.',
-			accountingQuestion: 'Is this a recognized loss contingency, a disclosure item, or only monitoring evidence?',
-			entryImpact: 'No accrual in this scenario. Add disclosure watch item and reassess before filing.',
+			trigger:
+				'Counsel says an early customer claim is possible, but loss is not probable or estimable.',
+			accountingQuestion:
+				'Is this a recognized loss contingency, a disclosure item, or only monitoring evidence?',
+			entryImpact:
+				'No accrual in this scenario. Add disclosure watch item and reassess before filing.',
 			control: 'Legal letter review and contingency checklist',
 			answer: 'Evaluate contingency and disclosure; no accrual yet in this scenario'
 		}
@@ -1120,7 +1138,11 @@
 			field: 'Customer paid Jan 08',
 			status: 'Matched',
 			source: 'Cash application file',
-			extracted: ['Receipt date: Jan 8, 2026', 'Applied to INV-1001', 'No short pay or credit memo'],
+			extracted: [
+				'Receipt date: Jan 8, 2026',
+				'Applied to INV-1001',
+				'No short pay or credit memo'
+			],
 			auditUse: 'Proves settlement of the receivable without proving revenue was earned.'
 		},
 		{
@@ -1202,7 +1224,8 @@
 			id: 'ar',
 			label: 'AR aging',
 			source: 'Customer invoices and cash applications',
-			result: 'Open invoices are aged, reserved if needed, and reconciled to the AR control account.',
+			result:
+				'Open invoices are aged, reserved if needed, and reconciled to the AR control account.',
 			control: 'Tie total AR aging to GL 1200 before statements are drafted.'
 		},
 		{
@@ -1219,7 +1242,13 @@
 			result: 'Approved and accrued obligations support AP and accrued expense balances.',
 			control: 'Aging and unbilled receipts are reconciled to vendor statements and GL.'
 		}
-	] satisfies { id: SubledgerTab; label: string; source: string; result: string; control: string }[];
+	] satisfies {
+		id: SubledgerTab;
+		label: string;
+		source: string;
+		result: string;
+		control: string;
+	}[];
 
 	const arAging = [
 		{ customer: 'Aster Labs', invoice: 'INV-1001', current: 0, pastDue: 0, status: 'Paid' },
@@ -2294,9 +2323,11 @@
 	const activeStage = $derived(stages[activeIndex]);
 	const ActiveIcon = $derived(activeStage.icon);
 	const landingHeroSrc = $derived.by(() =>
-		theme === ('day' as Theme)
-			? '/images/accounting-cycle-hero-light.png'
-			: '/images/accounting-cycle-hero-dark.png'
+		asset(
+			theme === ('day' as Theme)
+				? '/images/accounting-cycle-hero-light.png'
+				: '/images/accounting-cycle-hero-dark.png'
+		)
 	);
 	const selectedSetupArea = $derived(
 		setupAreas.find((area) => area.id === selectedSetupAreaId) ?? setupAreas[0]
@@ -2307,7 +2338,9 @@
 	const selectedEvidenceDoc = $derived(
 		evidenceDocs.find((doc) => doc.id === selectedEvidenceDocId) ?? evidenceDocs[0]
 	);
-	const selectedJudgmentStep = $derived(judgmentSteps[selectedJudgmentStepIndex] ?? judgmentSteps[0]);
+	const selectedJudgmentStep = $derived(
+		judgmentSteps[selectedJudgmentStepIndex] ?? judgmentSteps[0]
+	);
 	const selectedLaneIsCorrect = $derived(selectedLane === selectedEvent.lane);
 	const selectedSubledgerMeta = $derived(
 		subledgerTabs.find((tab) => tab.id === selectedSubledger) ?? subledgerTabs[0]
@@ -2471,20 +2504,28 @@
 		chooseStage(0, 'home-node');
 	}
 
+	function returnToLanding() {
+		landingVisible = true;
+		flyoutSection = null;
+	}
+
 	function demoStepsFor(stage: Stage): DemoStep[] {
 		if (stage.id === 'home') {
 			return [
 				{
 					label: 'Start with evidence',
-					detail: 'A $12,000 invoice is not a final reporting number yet. It begins as a supported business event.'
+					detail:
+						'A $12,000 invoice is not a final reporting number yet. It begins as a supported business event.'
 				},
 				{
 					label: 'Record the obligation',
-					detail: 'The supported invoice creates AR and deferred revenue because Nimbus still owes future service.'
+					detail:
+						'The supported invoice creates AR and deferred revenue because Nimbus still owes future service.'
 				},
 				{
 					label: 'Report and file',
-					detail: 'One month becomes revenue, the remaining liability flows to statements, notes, tie-out, and filing facts.'
+					detail:
+						'One month becomes revenue, the remaining liability flows to statements, notes, tie-out, and filing facts.'
 				}
 			];
 		}
@@ -2494,11 +2535,13 @@
 				{ label: 'Orient', detail: stage.watchPrompt },
 				{
 					label: 'Inspect the artifacts',
-					detail: 'The roadmap highlights the documents, records, controls, and reporting objects this section will use.'
+					detail:
+						'The roadmap highlights the documents, records, controls, and reporting objects this section will use.'
 				},
 				{
 					label: 'Follow the trace',
-					detail: 'The same transaction remains connected to source evidence, accounting judgment, ledgers, reports, and review evidence.'
+					detail:
+						'The same transaction remains connected to source evidence, accounting judgment, ledgers, reports, and review evidence.'
 				}
 			];
 		}
@@ -2556,7 +2599,8 @@
 			return [
 				{
 					label: 'Import the adjusted ledger',
-					detail: 'Each account balance is pulled from the GL after subledger and close entries post.'
+					detail:
+						'Each account balance is pulled from the GL after subledger and close entries post.'
 				},
 				{
 					label: 'Check equality',
@@ -2573,11 +2617,13 @@
 			{ label: 'Open the artifact', detail: stage.watchPrompt },
 			{
 				label: 'Apply the accounting step',
-				detail: 'The workbench updates the selected accounting artifact and exposes the downstream effect.'
+				detail:
+					'The workbench updates the selected accounting artifact and exposes the downstream effect.'
 			},
 			{
 				label: 'Check the trace',
-				detail: 'The number, document, or decision is ready to be followed forward or backward in the cycle.'
+				detail:
+					'The number, document, or decision is ready to be followed forward or backward in the cycle.'
 			}
 		];
 	}
@@ -2588,7 +2634,8 @@
 		traceIndex = Math.min(step, traceNodes.length - 1);
 
 		if (stageId === 'setup') {
-			selectedSetupAreaId = setupAreas[Math.min(step, setupAreas.length - 1)]?.id ?? selectedSetupAreaId;
+			selectedSetupAreaId =
+				setupAreas[Math.min(step, setupAreas.length - 1)]?.id ?? selectedSetupAreaId;
 			supportVisible = step > 1;
 		}
 
@@ -2622,7 +2669,8 @@
 		}
 
 		if (stageId === 'subledger') {
-			selectedSubledger = subledgerTabs[Math.min(step, subledgerTabs.length - 1)]?.id ?? selectedSubledger;
+			selectedSubledger =
+				subledgerTabs[Math.min(step, subledgerTabs.length - 1)]?.id ?? selectedSubledger;
 		}
 
 		if (
@@ -2642,9 +2690,7 @@
 		}
 
 		if (stageId === 'statements') {
-			statementTab = ['balance', 'income', 'cash', 'equity'][
-				Math.min(step, 3)
-			] as StatementTab;
+			statementTab = ['balance', 'income', 'cash', 'equity'][Math.min(step, 3)] as StatementTab;
 		}
 
 		if (stageId === 'cash-flow') {
@@ -2656,7 +2702,8 @@
 		}
 
 		if (stageId === 'audit') {
-			selectedAuditId = auditRequests[Math.min(step, auditRequests.length - 1)]?.id ?? selectedAuditId;
+			selectedAuditId =
+				auditRequests[Math.min(step, auditRequests.length - 1)]?.id ?? selectedAuditId;
 		}
 
 		if (stageId === 'filing') {
@@ -2838,14 +2885,34 @@
 {/snippet}
 
 <main class="simulator" data-theme={theme}>
-	<header class="masthead">
-		<a class="brand" href={resolve('/')} aria-label="Accounting Cycle Simulator home">
-			<Calculator size={19} strokeWidth={2.4} />
-			<strong>Accounting Cycle Simulator</strong>
-		</a>
+	{#if !landingVisible}
+		<header class="masthead">
+			<button
+				class="brand"
+				type="button"
+				aria-label="Return to landing page"
+				onclick={returnToLanding}
+			>
+				<Calculator size={19} strokeWidth={2.4} />
+				<strong>Accounting Cycle Simulator</strong>
+			</button>
 
+			<button
+				class="theme-toggle"
+				type="button"
+				aria-label={theme === 'day' ? 'Switch to night theme' : 'Switch to day theme'}
+				onclick={() => (theme = theme === 'day' ? 'night' : 'day')}
+			>
+				{#if theme === 'day'}
+					<Moon size={17} strokeWidth={2.4} />
+				{:else}
+					<Sun size={17} strokeWidth={2.4} />
+				{/if}
+			</button>
+		</header>
+	{:else}
 		<button
-			class="theme-toggle"
+			class="theme-toggle theme-toggle-floating"
 			type="button"
 			aria-label={theme === 'day' ? 'Switch to night theme' : 'Switch to day theme'}
 			onclick={() => (theme = theme === 'day' ? 'night' : 'day')}
@@ -2856,7 +2923,7 @@
 				<Sun size={17} strokeWidth={2.4} />
 			{/if}
 		</button>
-	</header>
+	{/if}
 
 	{#if landingVisible}
 		<section class="entry-page" aria-labelledby="entry-title">
@@ -2894,8 +2961,10 @@
 
 				<div class="entry-hero-overlay"></div>
 				<div class="entry-hero-content">
-					<small>Accounting Cycle Simulator</small>
-					<h1 id="entry-title">Trace every reported number back to the work that proves it.</h1>
+					<div class="entry-hero-brand">
+						<Calculator class="entry-hero-mark" size={72} strokeWidth={1.9} aria-hidden="true" />
+						<h1 id="entry-title">Accounting Cycle Simulator</h1>
+					</div>
 					<p>
 						Learn the full accounting cycle through one company close: source documents, judgment,
 						journals, ledgers, reconciliations, statements, controls, audit evidence, and filing.
@@ -2923,1287 +2992,1362 @@
 						</div>
 					{/each}
 				</div>
+
+				<div class="entry-author">
+					<p>Created by <strong>Eli Aboutorabi</strong></p>
+					<nav class="entry-author-links" aria-label="Author links">
+						<a href="https://eliaboutorabi.github.io/" target="_blank" rel="noreferrer">
+							<Globe size={16} strokeWidth={2.3} aria-hidden="true" />
+							<span>Homepage</span>
+						</a>
+						<a href="https://github.com/eliaboutorabi" target="_blank" rel="noreferrer">
+							<svg
+								class="entry-author-brand-icon"
+								viewBox="0 0 16 16"
+								aria-hidden="true"
+								focusable="false"
+							>
+								<path
+									d="M8 0C3.58 0 0 3.66 0 8.18c0 3.62 2.29 6.69 5.47 7.77.4.08.55-.18.55-.39 0-.19-.01-.84-.01-1.51-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.2-3.64-.9-3.64-4.02 0-.89.31-1.61.82-2.18-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.83A7.36 7.36 0 0 1 8 4.02c.68 0 1.36.09 2 .27 1.53-1.05 2.2-.83 2.2-.83.44 1.12.16 1.95.08 2.16.51.57.82 1.29.82 2.18 0 3.13-1.87 3.82-3.65 4.02.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .21.15.47.55.39A8.05 8.05 0 0 0 16 8.18C16 3.66 12.42 0 8 0Z"
+								/>
+							</svg>
+							<span>GitHub</span>
+						</a>
+						<a
+							href="https://www.linkedin.com/in/elham-aboutorabi/"
+							target="_blank"
+							rel="noreferrer"
+						>
+							<svg
+								class="entry-author-brand-icon"
+								viewBox="0 0 16 16"
+								aria-hidden="true"
+								focusable="false"
+							>
+								<path
+									d="M14.8 0H1.2C.54 0 0 .54 0 1.2v13.6c0 .66.54 1.2 1.2 1.2h13.6c.66 0 1.2-.54 1.2-1.2V1.2c0-.66-.54-1.2-1.2-1.2ZM4.75 13.6H2.37V6h2.38v7.6ZM3.56 4.96a1.38 1.38 0 1 1 0-2.76 1.38 1.38 0 0 1 0 2.76ZM13.63 13.6h-2.37V9.9c0-.88-.02-2.02-1.23-2.02-1.23 0-1.42.96-1.42 1.95v3.77H6.24V6h2.28v1.04h.03c.32-.6 1.09-1.23 2.24-1.23 2.4 0 2.84 1.58 2.84 3.63v4.16Z"
+								/>
+							</svg>
+							<span>LinkedIn</span>
+						</a>
+					</nav>
+				</div>
 			</section>
 		</section>
 	{:else}
-	{#if sidebarOpen}
-		<button
-			class="sidebar-backdrop"
-			type="button"
-			aria-label="Close contents"
-			onclick={toggleSidebar}
-		></button>
-	{/if}
-
-	{#if flyoutSection && !sidebarOpen}
-		<button
-			class="flyout-backdrop"
-			type="button"
-			aria-label="Close contents flyout"
-			onclick={closeFlyout}
-		></button>
-	{/if}
-
-	<aside class="toc-drawer" class:open={sidebarOpen} aria-label="Accounting cycle contents">
-		<div class="toc-header">
-			<span>Contents</span>
-			<button type="button" aria-label="Collapse contents" onclick={toggleSidebar}>
-				<PanelLeftClose size={16} strokeWidth={2.2} />
-			</button>
-		</div>
-
-		<nav class="toc-list">
-			{#each tocSections as section (section.id)}
-				{@const active = isTocActive(section)}
-				<div class="toc-group">
-					<div class={['toc-item', active && 'active']}>
-						<button type="button" class="toc-main" onclick={() => navigateToc(section)}>
-							{@render tocIcon(section, active, 16)}
-							<span>{section.label}</span>
-							{#if section.children}
-								<ChevronRight
-									size={13}
-									strokeWidth={2.2}
-									style={`transform: ${expandedSections.includes(section.id) ? 'rotate(90deg)' : 'rotate(0deg)'}`}
-								/>
-							{/if}
-						</button>
-					</div>
-
-					{#if section.children && expandedSections.includes(section.id)}
-						<div class="toc-children">
-							{#each section.children as child (child.id)}
-								{@const childActive = activeTocId === child.id}
-								<button
-									type="button"
-									class={['toc-child', childActive && 'active']}
-									onclick={() => navigateToc(child)}
-								>
-									{@render tocIcon(child, childActive, 13)}
-									<span>{child.label}</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			{/each}
-		</nav>
-	</aside>
-
-	{#if !sidebarOpen}
-		<aside class="toc-rail" aria-label="Collapsed accounting cycle contents">
+		{#if sidebarOpen}
 			<button
+				class="sidebar-backdrop"
 				type="button"
-				class="rail-toggle"
-				aria-label="Expand contents"
+				aria-label="Close contents"
 				onclick={toggleSidebar}
-			>
-				<PanelLeft size={17} strokeWidth={2.2} />
-			</button>
-
-			{#each tocSections as section (section.id)}
-				{@const active = isTocActive(section)}
-				<button
-					type="button"
-					class={['rail-item', active && 'active']}
-					aria-label={section.label}
-					onclick={(event) => openFlyout(section.id, event)}
-					onmouseenter={(event) => openFlyout(section.id, event)}
-				>
-					{@render tocIcon(section, active, 17)}
-				</button>
-			{/each}
-		</aside>
-
-		{#if flyoutSection}
-			{@const section = tocSections.find((item) => item.id === flyoutSection)}
-			{#if section}
-				<div
-					class="toc-flyout"
-					role="menu"
-					tabindex="-1"
-					style:top={`${flyoutY}px`}
-					onmouseleave={closeFlyout}
-				>
-					<button type="button" class="flyout-title" onclick={() => navigateToc(section)}>
-						{@render tocIcon(section, isTocActive(section), 15)}
-						<span>{section.label}</span>
-					</button>
-
-					{#if section.children}
-						<div class="flyout-children">
-							{#each section.children as child (child.id)}
-								{@const childActive = activeTocId === child.id}
-								<button
-									type="button"
-									class={['flyout-child', childActive && 'active']}
-									onclick={() => navigateToc(child)}
-								>
-									{@render tocIcon(child, childActive, 12)}
-									<span>{child.label}</span>
-								</button>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			{/if}
+			></button>
 		{/if}
-	{/if}
 
-	<div
-		class={['content-shell', !sidebarOpen && 'sidebar-compact']}
-		style:margin-left={sidebarOpen ? 'var(--sidebar-width)' : 'var(--sidebar-collapsed-width)'}
-	>
-		<section class="workspace-shell">
-			<aside
-				class={['lesson-panel', activeStage.id === 'home' && 'landing-panel']}
-				aria-labelledby="lesson-title"
-			>
-				{#if activeStage.id === 'home'}
-					<section class="landing-copy">
-						<div class="lesson-kicker">
-							<span><Workflow size={15} strokeWidth={2.5} /> Accounting cycle simulator</span>
-						</div>
+		{#if flyoutSection && !sidebarOpen}
+			<button
+				class="flyout-backdrop"
+				type="button"
+				aria-label="Close contents flyout"
+				onclick={closeFlyout}
+			></button>
+		{/if}
 
-						<h1 id="lesson-title">Close the books without losing the trail.</h1>
-						<p class="landing-lede">{nimbusScenario.introduction}</p>
+		<aside class="toc-drawer" class:open={sidebarOpen} aria-label="Accounting cycle contents">
+			<div class="toc-header">
+				<span>Contents</span>
+				<button type="button" aria-label="Collapse contents" onclick={toggleSidebar}>
+					<PanelLeftClose size={16} strokeWidth={2.2} />
+				</button>
+			</div>
 
-						<div class="landing-actions">
-							<button type="button" class="landing-primary" onclick={() => chooseStage(6, 'setup-node')}>
-								<span>Begin with setup</span>
-								<ArrowRight size={17} strokeWidth={2.5} />
+			<nav class="toc-list">
+				{#each tocSections as section (section.id)}
+					{@const active = isTocActive(section)}
+					<div class="toc-group">
+						<div class={['toc-item', active && 'active']}>
+							<button type="button" class="toc-main" onclick={() => navigateToc(section)}>
+								{@render tocIcon(section, active, 16)}
+								<span>{section.label}</span>
+								{#if section.children}
+									<ChevronRight
+										size={13}
+										strokeWidth={2.2}
+										style={`transform: ${expandedSections.includes(section.id) ? 'rotate(90deg)' : 'rotate(0deg)'}`}
+									/>
+								{/if}
 							</button>
-							<button type="button" class="landing-secondary" onclick={() => (traceIndex = 7)}>
-								<GitBranch size={16} strokeWidth={2.4} />
-								<span>Preview trace</span>
-							</button>
 						</div>
 
-						<div class="landing-stats" aria-label="Simulator scenario">
-							{#each landingStats as stat (stat.label)}
-								<div>
-									<small>{stat.label}</small>
-									<strong>{stat.value}</strong>
-									<span>{stat.detail}</span>
-								</div>
-							{/each}
-						</div>
-
-						<div class="landing-route">
-							<div>
-								<Eye size={17} strokeWidth={2.4} />
-								<span>Watch each artifact update in sequence before you try the accounting move.</span>
-							</div>
-							<div>
-								<Hand size={17} strokeWidth={2.4} />
-								<span>Switch demos into practice mode as the simulator becomes editable.</span>
-							</div>
-							<div>
-								<SearchCheck size={17} strokeWidth={2.4} />
-								<span>Trace any reported number backward to the support that justifies it.</span>
-							</div>
-						</div>
-					</section>
-				{:else}
-					<div class="lesson-kicker">
-						<span
-							><ActiveIcon size={15} strokeWidth={2.5} /> Step {String(activeIndex).padStart(
-								2,
-								'0'
-							)}</span
-						>
-					</div>
-
-					<h1 id="lesson-title">{activeStage.title}</h1>
-					<p class="question">{activeStage.question}</p>
-
-					<div class="lesson-block">
-						<h2><BookOpen size={16} strokeWidth={2.3} /> Lesson</h2>
-						<p>{activeStage.lesson}</p>
-					</div>
-
-					<div class="lesson-block">
-						<h2><ClipboardCheck size={16} strokeWidth={2.3} /> What to notice</h2>
-						<ul>
-							{#each activeStage.notice as point (point)}
-								<li>{point}</li>
-							{/each}
-						</ul>
-					</div>
-
-					<div class="lesson-block">
-						<h2><BadgeCheck size={16} strokeWidth={2.3} /> Example</h2>
-						<p>{activeStage.example}</p>
-					</div>
-
-					<div class="lesson-block">
-						<h2><AlertTriangle size={16} strokeWidth={2.3} /> Common mistake</h2>
-						<p>{activeStage.mistake}</p>
-					</div>
-
-					<div class="key-point">
-						<strong>Key point</strong>
-						<span>{activeStage.keyPoint}</span>
-					</div>
-				{/if}
-			</aside>
-
-			<section class="process-panel" aria-label={activeStage.workspace}>
-				{#if activeStage.id !== 'home'}
-					<div class="process-header">
-						<div class="artifact-title">
-							<span class="artifact-icon"><ActiveIcon size={20} strokeWidth={2.4} /></span>
-							<span>
-								<small>{activeStage.workspace}</small>
-								<strong>{nimbusScenario.company} - {nimbusScenario.period}</strong>
-							</span>
-						</div>
-
-						<div class="demo-toolbar">
-							<div class="mode-switch" aria-label="Demo mode">
-								<button
-									type="button"
-									class={mode === 'watch' ? 'active' : ''}
-									aria-pressed={mode === 'watch'}
-									onclick={() => setDemoMode('watch')}
-								>
-									<Eye size={15} strokeWidth={2.4} />
-									Watch
-								</button>
-								<button
-									type="button"
-									class={mode === 'do' ? 'active' : ''}
-									aria-pressed={mode === 'do'}
-									onclick={() => setDemoMode('do')}
-								>
-									<Hand size={15} strokeWidth={2.4} />
-									Do
-								</button>
-							</div>
-
-							{#if mode === 'watch'}
-								<div class="step-controls" aria-label="Watch controls">
-									<button type="button" onclick={() => setDemoStep(demoStep - 1)} disabled={demoStep === 0}>
-										<ArrowLeft size={14} strokeWidth={2.4} />
-									</button>
-									<span>{demoStep + 1} / {activeDemoSteps.length}</span>
+						{#if section.children && expandedSections.includes(section.id)}
+							<div class="toc-children">
+								{#each section.children as child (child.id)}
+									{@const childActive = activeTocId === child.id}
 									<button
 										type="button"
-										onclick={() => setDemoStep(demoStep + 1)}
-										disabled={demoStep === activeDemoSteps.length - 1}
+										class={['toc-child', childActive && 'active']}
+										onclick={() => navigateToc(child)}
 									>
-										<ArrowRight size={14} strokeWidth={2.4} />
+										{@render tocIcon(child, childActive, 13)}
+										<span>{child.label}</span>
 									</button>
-									<button type="button" onclick={resetDemo} aria-label="Reset watch demo">
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</nav>
+		</aside>
+
+		{#if !sidebarOpen}
+			<aside class="toc-rail" aria-label="Collapsed accounting cycle contents">
+				<button
+					type="button"
+					class="rail-toggle"
+					aria-label="Expand contents"
+					onclick={toggleSidebar}
+				>
+					<PanelLeft size={17} strokeWidth={2.2} />
+				</button>
+
+				{#each tocSections as section (section.id)}
+					{@const active = isTocActive(section)}
+					<button
+						type="button"
+						class={['rail-item', active && 'active']}
+						aria-label={section.label}
+						onclick={(event) => openFlyout(section.id, event)}
+						onmouseenter={(event) => openFlyout(section.id, event)}
+					>
+						{@render tocIcon(section, active, 17)}
+					</button>
+				{/each}
+			</aside>
+
+			{#if flyoutSection}
+				{@const section = tocSections.find((item) => item.id === flyoutSection)}
+				{#if section}
+					<div
+						class="toc-flyout"
+						role="menu"
+						tabindex="-1"
+						style:top={`${flyoutY}px`}
+						onmouseleave={closeFlyout}
+					>
+						<button type="button" class="flyout-title" onclick={() => navigateToc(section)}>
+							{@render tocIcon(section, isTocActive(section), 15)}
+							<span>{section.label}</span>
+						</button>
+
+						{#if section.children}
+							<div class="flyout-children">
+								{#each section.children as child (child.id)}
+									{@const childActive = activeTocId === child.id}
+									<button
+										type="button"
+										class={['flyout-child', childActive && 'active']}
+										onclick={() => navigateToc(child)}
+									>
+										{@render tocIcon(child, childActive, 12)}
+										<span>{child.label}</span>
+									</button>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/if}
+			{/if}
+		{/if}
+
+		<div
+			class={['content-shell', !sidebarOpen && 'sidebar-compact']}
+			style:margin-left={sidebarOpen ? 'var(--sidebar-width)' : 'var(--sidebar-collapsed-width)'}
+		>
+			<section class="workspace-shell">
+				<aside
+					class={['lesson-panel', activeStage.id === 'home' && 'landing-panel']}
+					aria-labelledby="lesson-title"
+				>
+					{#if activeStage.id === 'home'}
+						<section class="landing-copy">
+							<div class="lesson-kicker">
+								<span><Workflow size={15} strokeWidth={2.5} /> Accounting cycle simulator</span>
+							</div>
+
+							<h1 id="lesson-title">Close the books without losing the trail.</h1>
+							<p class="landing-lede">{nimbusScenario.introduction}</p>
+
+							<div class="landing-actions">
+								<button
+									type="button"
+									class="landing-primary"
+									onclick={() => chooseStage(6, 'setup-node')}
+								>
+									<span>Begin with setup</span>
+									<ArrowRight size={17} strokeWidth={2.5} />
+								</button>
+								<button type="button" class="landing-secondary" onclick={() => (traceIndex = 7)}>
+									<GitBranch size={16} strokeWidth={2.4} />
+									<span>Preview trace</span>
+								</button>
+							</div>
+
+							<div class="landing-stats" aria-label="Simulator scenario">
+								{#each landingStats as stat (stat.label)}
+									<div>
+										<small>{stat.label}</small>
+										<strong>{stat.value}</strong>
+										<span>{stat.detail}</span>
+									</div>
+								{/each}
+							</div>
+
+							<div class="landing-route">
+								<div>
+									<Eye size={17} strokeWidth={2.4} />
+									<span
+										>Watch each artifact update in sequence before you try the accounting move.</span
+									>
+								</div>
+								<div>
+									<Hand size={17} strokeWidth={2.4} />
+									<span>Switch demos into practice mode as the simulator becomes editable.</span>
+								</div>
+								<div>
+									<SearchCheck size={17} strokeWidth={2.4} />
+									<span>Trace any reported number backward to the support that justifies it.</span>
+								</div>
+							</div>
+						</section>
+					{:else}
+						<div class="lesson-kicker">
+							<span
+								><ActiveIcon size={15} strokeWidth={2.5} /> Step {String(activeIndex).padStart(
+									2,
+									'0'
+								)}</span
+							>
+						</div>
+
+						<h1 id="lesson-title">{activeStage.title}</h1>
+						<p class="question">{activeStage.question}</p>
+
+						<div class="lesson-block">
+							<h2><BookOpen size={16} strokeWidth={2.3} /> Lesson</h2>
+							<p>{activeStage.lesson}</p>
+						</div>
+
+						<div class="lesson-block">
+							<h2><ClipboardCheck size={16} strokeWidth={2.3} /> What to notice</h2>
+							<ul>
+								{#each activeStage.notice as point (point)}
+									<li>{point}</li>
+								{/each}
+							</ul>
+						</div>
+
+						<div class="lesson-block">
+							<h2><BadgeCheck size={16} strokeWidth={2.3} /> Example</h2>
+							<p>{activeStage.example}</p>
+						</div>
+
+						<div class="lesson-block">
+							<h2><AlertTriangle size={16} strokeWidth={2.3} /> Common mistake</h2>
+							<p>{activeStage.mistake}</p>
+						</div>
+
+						<div class="key-point">
+							<strong>Key point</strong>
+							<span>{activeStage.keyPoint}</span>
+						</div>
+					{/if}
+				</aside>
+
+				<section class="process-panel" aria-label={activeStage.workspace}>
+					{#if activeStage.id !== 'home'}
+						<div class="process-header">
+							<div class="artifact-title">
+								<span class="artifact-icon"><ActiveIcon size={20} strokeWidth={2.4} /></span>
+								<span>
+									<small>{activeStage.workspace}</small>
+									<strong>{nimbusScenario.company} - {nimbusScenario.period}</strong>
+								</span>
+							</div>
+
+							<div class="demo-toolbar">
+								<div class="mode-switch" aria-label="Demo mode">
+									<button
+										type="button"
+										class={mode === 'watch' ? 'active' : ''}
+										aria-pressed={mode === 'watch'}
+										onclick={() => setDemoMode('watch')}
+									>
+										<Eye size={15} strokeWidth={2.4} />
+										Watch
+									</button>
+									<button
+										type="button"
+										class={mode === 'do' ? 'active' : ''}
+										aria-pressed={mode === 'do'}
+										onclick={() => setDemoMode('do')}
+									>
+										<Hand size={15} strokeWidth={2.4} />
+										Do
+									</button>
+								</div>
+
+								{#if mode === 'watch'}
+									<div class="step-controls" aria-label="Watch controls">
+										<button
+											type="button"
+											onclick={() => setDemoStep(demoStep - 1)}
+											disabled={demoStep === 0}
+										>
+											<ArrowLeft size={14} strokeWidth={2.4} />
+										</button>
+										<span>{demoStep + 1} / {activeDemoSteps.length}</span>
+										<button
+											type="button"
+											onclick={() => setDemoStep(demoStep + 1)}
+											disabled={demoStep === activeDemoSteps.length - 1}
+										>
+											<ArrowRight size={14} strokeWidth={2.4} />
+										</button>
+										<button type="button" onclick={resetDemo} aria-label="Reset watch demo">
+											<RotateCcw size={14} strokeWidth={2.4} />
+										</button>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
+
+					{#if activeStage.id !== 'home'}
+						<div class={['demo-guidance', mode]}>
+							<div>
+								<small>{mode === 'watch' ? 'Watch step' : 'Do task'}</small>
+								<strong
+									>{mode === 'watch'
+										? activeDemoStep.label
+										: 'Practice the accounting move'}</strong
+								>
+								<p>{mode === 'watch' ? activeDemoStep.detail : activeStage.doPrompt}</p>
+							</div>
+
+							{#if mode === 'do'}
+								<div class="practice-actions">
+									<button type="button" onclick={checkPractice}>
+										<CheckCircle2 size={15} strokeWidth={2.4} />
+										Check
+									</button>
+									<button type="button" onclick={showPracticeAnswer}>Show answer</button>
+									<button type="button" onclick={resetDemo} aria-label="Reset practice">
 										<RotateCcw size={14} strokeWidth={2.4} />
 									</button>
 								</div>
 							{/if}
 						</div>
-					</div>
-				{/if}
+					{/if}
 
-				{#if activeStage.id !== 'home'}
-					<div class={['demo-guidance', mode]}>
-						<div>
-							<small>{mode === 'watch' ? 'Watch step' : 'Do task'}</small>
-							<strong>{mode === 'watch' ? activeDemoStep.label : 'Practice the accounting move'}</strong>
-							<p>{mode === 'watch' ? activeDemoStep.detail : activeStage.doPrompt}</p>
-						</div>
-
-						{#if mode === 'do'}
-							<div class="practice-actions">
-								<button type="button" onclick={checkPractice}>
-									<CheckCircle2 size={15} strokeWidth={2.4} />
-									Check
-								</button>
-								<button type="button" onclick={showPracticeAnswer}>Show answer</button>
-								<button type="button" onclick={resetDemo} aria-label="Reset practice">
-									<RotateCcw size={14} strokeWidth={2.4} />
-								</button>
-							</div>
-						{/if}
-					</div>
-				{/if}
-
-				<div class="artifact-body">
-					{#if activeStage.id === 'home'}
-						<section class="landing-workbench">
-							<div class="landing-dossier">
-								<div>
-									<small>Scenario dossier</small>
-									<h2>{nimbusScenario.company} - {nimbusScenario.period}</h2>
-									<p>
-										You are building the close file for a growing bike fleet company. The work
-										starts with business evidence and ends with reportable, reviewable facts.
-									</p>
-								</div>
-								<div class="landing-ledger-mini" aria-label="Opening accounting facts">
-									{#each nimbusScenario.openingFacts as fact (fact.label)}
-										<div><span>{fact.label}</span><strong>{fact.value}</strong></div>
-									{/each}
-								</div>
-							</div>
-
-							<div class="cycle-strip" aria-label="Accounting cycle sections">
-								{#each landingCycle as step, index (step.label)}
-									{@const StepIcon = step.icon}
-									<button type="button" onclick={() => chooseStage(step.stage)}>
-										<span>{String(index + 1).padStart(2, '0')}</span>
-										<StepIcon size={19} strokeWidth={2.4} />
-										<strong>{step.label}</strong>
-										<small>{step.detail}</small>
-									</button>
-								{/each}
-							</div>
-
-							<div class="landing-trace">
-								<div class="trace-preview-header">
+					<div class="artifact-body">
+						{#if activeStage.id === 'home'}
+							<section class="landing-workbench">
+								<div class="landing-dossier">
 									<div>
-										<small>Trace preview</small>
-										<strong>Pick any point in the chain</strong>
+										<small>Scenario dossier</small>
+										<h2>{nimbusScenario.company} - {nimbusScenario.period}</h2>
+										<p>
+											You are building the close file for a growing bike fleet company. The work
+											starts with business evidence and ends with reportable, reviewable facts.
+										</p>
 									</div>
-									<span>{traceNodes[traceIndex].value}</span>
-								</div>
-
-								<div class="trace-preview-track">
-									{#each traceNodes as node, index (node.label)}
-										<button
-											type="button"
-											class={traceIndex === index ? 'active' : ''}
-											aria-label={`Trace ${node.label}`}
-											onclick={() => (traceIndex = index)}
-										>
-											<span>{String(index + 1).padStart(2, '0')}</span>
-											<strong>{node.label}</strong>
-										</button>
-									{/each}
-								</div>
-
-								<div class="trace-detail-card">
-									<GitBranch size={18} strokeWidth={2.4} />
-									<div>
-										<small>{traceNodes[traceIndex].value}</small>
-										<strong>{traceNodes[traceIndex].label}</strong>
-										<p>{traceNodes[traceIndex].detail}</p>
-									</div>
-								</div>
-							</div>
-						</section>
-					{:else if activeStage.id.endsWith('-overview')}
-						<section class="overview-workspace">
-							<div class="overview-card">
-								<small>{activeStage.group}</small>
-								<strong>{activeStage.workspace}</strong>
-								<p>{activeStage.lesson}</p>
-							</div>
-							<div class="overview-steps">
-								{#each activeStage.notice as point, index (point)}
-									<div>
-										<span>{String(index + 1).padStart(2, '0')}</span>
-										<p>{point}</p>
-									</div>
-								{/each}
-							</div>
-							<div class="trace-panel">
-								<strong>What this section produces</strong>
-								<p>{activeStage.keyPoint}</p>
-							</div>
-						</section>
-					{:else if activeStage.id === 'setup'}
-						<section class="setup-workbench">
-							<div class="setup-control-plane">
-								<div class="setup-area-list" aria-label="Company setup areas">
-									{#each setupAreas as area (area.id)}
-										{@const SetupIcon = area.icon}
-										<button
-											type="button"
-											class={selectedSetupAreaId === area.id ? 'active' : ''}
-											onclick={() => (selectedSetupAreaId = area.id)}
-										>
-											<SetupIcon class="setup-area-icon" size={17} strokeWidth={2.4} />
-											<span>
-												<strong>{area.label}</strong>
-												<small>{area.status}</small>
-											</span>
-										</button>
-									{/each}
-								</div>
-
-								<div class="setup-area-detail">
-									<small>{selectedSetupArea.owner}</small>
-									<h3>{selectedSetupArea.label}</h3>
-									<p>{selectedSetupArea.detail}</p>
-									<div class="setup-output">
-										<span>Setup output</span>
-										<strong>{selectedSetupArea.output}</strong>
-									</div>
-									<div class="setup-risk">
-										<AlertTriangle class="setup-risk-icon" size={16} strokeWidth={2.3} />
-										<span>{selectedSetupArea.risk}</span>
-									</div>
-								</div>
-							</div>
-
-							<div class="setup-readiness">
-								{#each systemNodes as node (node.label)}
-									<div class="system-node">
-										<small>{node.label}</small>
-										<strong>{node.value}</strong>
-										<span>{node.detail}</span>
-									</div>
-								{/each}
-							</div>
-
-							<div class="workpaper-table compact">
-								<table>
-									<thead>
-										<tr><th>Account</th><th>Type</th><th>Statement mapping</th><th>Status</th></tr>
-									</thead>
-									<tbody>
-										{#each chartAccounts as row (row.account)}
-											<tr>
-												<td>{row.account}</td>
-												<td>{row.type}</td>
-												<td>{row.mapping}</td>
-												<td>{@render statusPill(row.status)}</td>
-											</tr>
+									<div class="landing-ledger-mini" aria-label="Opening accounting facts">
+										{#each nimbusScenario.openingFacts as fact (fact.label)}
+											<div><span>{fact.label}</span><strong>{fact.value}</strong></div>
 										{/each}
-									</tbody>
-								</table>
-							</div>
-						</section>
-					{:else if activeStage.id === 'events'}
-						<section class="event-board">
-							<div class="event-list">
-								{#each eventQueue as event (event.id)}
-									<button
-										type="button"
-										class={['event-card', selectedEventId === event.id && 'active']}
-										onclick={() => {
-											selectedEventId = event.id;
-											selectedLane = mode === 'watch' ? event.lane : null;
-											issueResolved = mode === 'watch';
-										}}
-									>
-										<small>{event.date}</small>
-										<strong>{event.event}</strong>
-										<span>{event.evidence}</span>
-									</button>
-								{/each}
-							</div>
-							<div class="event-docket">
-								<small>{selectedEvent.date} - {selectedEvent.counterparty}</small>
-								<h3>{selectedEvent.event}</h3>
-								<div class="event-facts">
-									<div><span>Amount</span><strong>{selectedEvent.amount}</strong></div>
-									<div><span>Evidence</span><strong>{selectedEvent.evidence}</strong></div>
-									<div><span>Control</span><strong>{selectedEvent.control}</strong></div>
+									</div>
 								</div>
-								<p>{selectedEvent.trigger}</p>
-								<div class="event-question">
-									<ClipboardCheck size={17} strokeWidth={2.4} />
-									<span>{selectedEvent.accountingQuestion}</span>
-								</div>
-							</div>
-							<div class="decision-panel">
-								<small>Selected event</small>
-								<h3>Classify the accounting response</h3>
-								<div class="lane-grid">
-									{#each triageLanes as lane (lane.label)}
-										<button
-											type="button"
-											class={['lane', selectedLane === lane.label && 'active']}
-											onclick={() => {
-												selectedLane = lane.label;
-												issueResolved = lane.label === selectedEvent.lane;
-											}}
-										>
-											<strong>{lane.label}</strong>
-											<span>{lane.description}</span>
+
+								<div class="cycle-strip" aria-label="Accounting cycle sections">
+									{#each landingCycle as step, index (step.label)}
+										{@const StepIcon = step.icon}
+										<button type="button" onclick={() => chooseStage(step.stage)}>
+											<span>{String(index + 1).padStart(2, '0')}</span>
+											<StepIcon size={19} strokeWidth={2.4} />
+											<strong>{step.label}</strong>
+											<small>{step.detail}</small>
 										</button>
 									{/each}
 								</div>
-								<div class="decision-outcome">
-									<strong>
-										{selectedLane
-											? selectedLaneIsCorrect
-												? 'Correct classification'
-												: 'Needs review'
-											: 'Choose a lane'}
-									</strong>
-									<p>
-										{selectedLane
-											? selectedLaneIsCorrect
-												? selectedEvent.entryImpact
-												: selectedEvent.answer
-											: selectedEvent.accountingQuestion}
-									</p>
-									{@render statusPill(
-										selectedLane
-											? selectedLaneIsCorrect
-												? 'Learner matched'
-												: `Correct lane: ${selectedEvent.lane}`
-											: 'Awaiting classification'
-									)}
+
+								<div class="landing-trace">
+									<div class="trace-preview-header">
+										<div>
+											<small>Trace preview</small>
+											<strong>Pick any point in the chain</strong>
+										</div>
+										<span>{traceNodes[traceIndex].value}</span>
+									</div>
+
+									<div class="trace-preview-track">
+										{#each traceNodes as node, index (node.label)}
+											<button
+												type="button"
+												class={traceIndex === index ? 'active' : ''}
+												aria-label={`Trace ${node.label}`}
+												onclick={() => (traceIndex = index)}
+											>
+												<span>{String(index + 1).padStart(2, '0')}</span>
+												<strong>{node.label}</strong>
+											</button>
+										{/each}
+									</div>
+
+									<div class="trace-detail-card">
+										<GitBranch size={18} strokeWidth={2.4} />
+										<div>
+											<small>{traceNodes[traceIndex].value}</small>
+											<strong>{traceNodes[traceIndex].label}</strong>
+											<p>{traceNodes[traceIndex].detail}</p>
+										</div>
+									</div>
 								</div>
-							</div>
-						</section>
-					{:else if activeStage.id === 'evidence'}
-						<section class="evidence-packet">
-							<div class="document-stack">
-								{#each evidenceDocs as doc (doc.id)}
-									<button
-										type="button"
-										class={['document-row', selectedEvidenceDocId === doc.id && 'active']}
-										onclick={() => (selectedEvidenceDocId = doc.id)}
-									>
-										<span>{doc.id}</span>
-										<strong>{doc.type}</strong>
-										<p>{doc.field}</p>
-										{@render statusPill(doc.status)}
-									</button>
-								{/each}
-							</div>
-							<div class="evidence-review">
-								<small>{selectedEvidenceDoc.source}</small>
-								<h3>{selectedEvidenceDoc.type}</h3>
-								<p>{selectedEvidenceDoc.auditUse}</p>
-								<div class="extracted-fields">
-									{#each selectedEvidenceDoc.extracted as field (field)}
-										<span>{field}</span>
+							</section>
+						{:else if activeStage.id.endsWith('-overview')}
+							<section class="overview-workspace">
+								<div class="overview-card">
+									<small>{activeStage.group}</small>
+									<strong>{activeStage.workspace}</strong>
+									<p>{activeStage.lesson}</p>
+								</div>
+								<div class="overview-steps">
+									{#each activeStage.notice as point, index (point)}
+										<div>
+											<span>{String(index + 1).padStart(2, '0')}</span>
+											<p>{point}</p>
+										</div>
 									{/each}
 								</div>
-							</div>
-							<div class="packet-summary">
-								<h3>Evidence packet completeness</h3>
-								<div class="checklist">
-									<span><CheckCircle2 size={15} /> Customer and contract identified</span>
-									<span><CheckCircle2 size={15} /> Billing amount and service period extracted</span
-									>
-									<span><CheckCircle2 size={15} /> Cash receipt matched to bank line</span>
-									<span><CheckCircle2 size={15} /> Revenue policy linked</span>
+								<div class="trace-panel">
+									<strong>What this section produces</strong>
+									<p>{activeStage.keyPoint}</p>
 								</div>
-								<button
-									type="button"
-									class="primary-action"
-									onclick={() => (supportVisible = true)}
-								>
-									Mark packet ready
-								</button>
-								{#if supportVisible}
-									<p class="success-note">
-										Packet is ready for accounting interpretation and later audit trace.
-									</p>
-								{/if}
-							</div>
-						</section>
-					{:else if activeStage.id === 'judgment'}
-						<section class="judgment-tree">
-							<div class="judgment-steps">
-								{#each judgmentSteps as step, index (step.label)}
-									<button
-										type="button"
-										class={['judgment-step', selectedJudgmentStepIndex === index && 'active']}
-										onclick={() => (selectedJudgmentStepIndex = index)}
-									>
-										<span>{String(index + 1).padStart(2, '0')}</span>
-										<strong>{step.label}</strong>
-										<p>{step.result}</p>
-									</button>
-								{/each}
-							</div>
-							<div class="judgment-memo">
-								<small>{selectedJudgmentStep.evidence}</small>
-								<h3>{selectedJudgmentStep.question}</h3>
-								<p>{selectedJudgmentStep.memo}</p>
-								<div>
-									<AlertTriangle size={16} strokeWidth={2.3} />
-									<span>{selectedJudgmentStep.risk}</span>
-								</div>
-							</div>
-							<div class="decision-panel">
-								<small>Accounting treatment</small>
-								<h3>How should Nimbus recognize the $12,000 contract?</h3>
-								<div class="choice-stack">
-									<button
-										type="button"
-										class={selectedTreatment === 'immediate' ? 'active' : ''}
-										onclick={() => (selectedTreatment = 'immediate')}
-									>
-										Recognize all revenue immediately
-									</button>
-									<button
-										type="button"
-										class={selectedTreatment === 'over-time' ? 'active' : ''}
-										onclick={() => (selectedTreatment = 'over-time')}
-									>
-										Defer and recognize over the service term
-									</button>
-								</div>
-								<p>
-									{selectedTreatment === 'over-time'
-										? 'Correct. January recognizes $1,000 of service revenue and leaves $11,000 as deferred revenue.'
-										: 'This would overstate January revenue and understate the remaining performance obligation.'}
-								</p>
-								<div class="mini-entry">
-									<div><span>Debit</span><strong>Deferred revenue</strong><em>$1,000</em></div>
-									<div><span>Credit</span><strong>Service revenue</strong><em>$1,000</em></div>
-								</div>
-							</div>
-						</section>
-					{:else if activeStage.id === 'subledger'}
-						<section class="subledger-workspace">
-							<div class="record-toolbar">
-								<div>
-									<small>Subledger source</small>
-									<strong>{selectedSubledgerMeta.source}</strong>
-								</div>
-								<span>{selectedSubledgerMeta.label}</span>
-							</div>
-							<div class="tabs subledger-tabs">
-								{#each subledgerTabs as tab (tab.id)}
-									<button
-										type="button"
-										class={selectedSubledger === tab.id ? 'active' : ''}
-										onclick={() => (selectedSubledger = tab.id)}
-									>
-										{tab.label}
-									</button>
-								{/each}
-							</div>
-							<div class="record-split">
-								<div class="workpaper-table subledger-table">
-									<table>
-										{#if selectedSubledger === 'ar'}
-											<thead>
-												<tr>
-													<th>Customer</th>
-													<th>Invoice</th>
-													<th>Current</th>
-													<th>Past due</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												{#each arAging as row (row.invoice)}
-													<tr>
-														<td>{row.customer}</td>
-														<td>{row.invoice}</td>
-														<td>{money(row.current)}</td>
-														<td>{money(row.pastDue)}</td>
-														<td>{@render statusPill(row.status)}</td>
-													</tr>
-												{/each}
-											</tbody>
-										{:else if selectedSubledger === 'revenue'}
-											<thead>
-												<tr>
-													<th>Month</th>
-													<th>Billings</th>
-													<th>Revenue</th>
-													<th>Deferred ending</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												{#each revenueSchedule as row (row.month)}
-													<tr>
-														<td>{row.month}</td>
-														<td>{money(row.billings)}</td>
-														<td>{money(row.revenue)}</td>
-														<td>{money(row.deferredEnding)}</td>
-														<td>{@render statusPill(row.status)}</td>
-													</tr>
-												{/each}
-											</tbody>
-										{:else if selectedSubledger === 'inventory'}
-											<thead>
-												<tr>
-													<th>SKU</th>
-													<th>Receipt</th>
-													<th>Units</th>
-													<th>Unit cost</th>
-													<th>Total</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												{#each inventoryLayers as row (row.receipt)}
-													<tr>
-														<td>{row.sku}</td>
-														<td>{row.receipt}</td>
-														<td>{row.units}</td>
-														<td>{money(row.unitCost)}</td>
-														<td>{money(row.total)}</td>
-														<td>{@render statusPill(row.status)}</td>
-													</tr>
-												{/each}
-											</tbody>
-										{:else}
-											<thead>
-												<tr>
-													<th>Vendor</th>
-													<th>Bill</th>
-													<th>Current</th>
-													<th>Past due</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-											<tbody>
-												{#each apAging as row (row.bill)}
-													<tr>
-														<td>{row.vendor}</td>
-														<td>{row.bill}</td>
-														<td>{money(row.current)}</td>
-														<td>{money(row.pastDue)}</td>
-														<td>{@render statusPill(row.status)}</td>
-													</tr>
-												{/each}
-											</tbody>
-										{/if}
-									</table>
-								</div>
-								<aside class="record-note">
-									<small>Subledger role</small>
-									<h3>{selectedSubledgerMeta.label}</h3>
-									<p>{selectedSubledgerMeta.result}</p>
-									<div>
-										<CheckCircle2 size={16} strokeWidth={2.4} />
-										<span>{selectedSubledgerMeta.control}</span>
+							</section>
+						{:else if activeStage.id === 'setup'}
+							<section class="setup-workbench">
+								<div class="setup-control-plane">
+									<div class="setup-area-list" aria-label="Company setup areas">
+										{#each setupAreas as area (area.id)}
+											{@const SetupIcon = area.icon}
+											<button
+												type="button"
+												class={selectedSetupAreaId === area.id ? 'active' : ''}
+												onclick={() => (selectedSetupAreaId = area.id)}
+											>
+												<SetupIcon class="setup-area-icon" size={17} strokeWidth={2.4} />
+												<span>
+													<strong>{area.label}</strong>
+													<small>{area.status}</small>
+												</span>
+											</button>
+										{/each}
 									</div>
-								</aside>
-							</div>
-						</section>
-					{:else if activeStage.id === 'journal'}
-						<section class="journal-workbench">
-							<div class="journal-list">
-								{#each journalEntries as entry (entry.id)}
-									<button
-										type="button"
-										class={['journal-card', selectedJournalId === entry.id && 'active']}
-										onclick={() => (selectedJournalId = entry.id)}
-									>
-										<span>{entry.date}</span>
-										<strong>{entry.id}</strong>
-										<small>{entry.title}</small>
-										{@render statusPill(postedJournalIds.includes(entry.id) ? 'Posted' : 'Draft')}
-									</button>
-								{/each}
-							</div>
 
-							<div class="journal-entry-detail">
-								<header class="journal-detail-header">
-									<div>
-										<small>{selectedJournalEntry.source}</small>
-										<h3>{selectedJournalEntry.id}: {selectedJournalEntry.title}</h3>
+									<div class="setup-area-detail">
+										<small>{selectedSetupArea.owner}</small>
+										<h3>{selectedSetupArea.label}</h3>
+										<p>{selectedSetupArea.detail}</p>
+										<div class="setup-output">
+											<span>Setup output</span>
+											<strong>{selectedSetupArea.output}</strong>
+										</div>
+										<div class="setup-risk">
+											<AlertTriangle class="setup-risk-icon" size={16} strokeWidth={2.3} />
+											<span>{selectedSetupArea.risk}</span>
+										</div>
 									</div>
-									{@render statusPill(selectedJournalPosted ? 'Posted' : 'Ready')}
-								</header>
-								<p>{selectedJournalEntry.purpose}</p>
-								<div class="journal-meta">
-									<div><span>Date</span><strong>{selectedJournalEntry.date}</strong></div>
-									<div><span>Control</span><strong>{selectedJournalEntry.control}</strong></div>
 								</div>
-								<div class="workpaper-table journal-sheet">
+
+								<div class="setup-readiness">
+									{#each systemNodes as node (node.label)}
+										<div class="system-node">
+											<small>{node.label}</small>
+											<strong>{node.value}</strong>
+											<span>{node.detail}</span>
+										</div>
+									{/each}
+								</div>
+
+								<div class="workpaper-table compact">
 									<table>
 										<thead>
-											<tr><th>Account</th><th>Debit</th><th>Credit</th><th>Source</th></tr>
+											<tr><th>Account</th><th>Type</th><th>Statement mapping</th><th>Status</th></tr
+											>
 										</thead>
 										<tbody>
-											{#each selectedJournalEntry.lines as line (`${selectedJournalEntry.id}-${line.account}-${line.ref}`)}
+											{#each chartAccounts as row (row.account)}
 												<tr>
-													<td>{line.account}</td>
-													<td>{line.debit ? money(line.debit) : ''}</td>
-													<td>{line.credit ? money(line.credit) : ''}</td>
-													<td>{line.ref}</td>
+													<td>{row.account}</td>
+													<td>{row.type}</td>
+													<td>{row.mapping}</td>
+													<td>{@render statusPill(row.status)}</td>
 												</tr>
 											{/each}
 										</tbody>
-										<tfoot>
-											<tr>
-												<td>Entry total</td>
-												<td>{money(selectedJournalDebitTotal)}</td>
-												<td>{money(selectedJournalCreditTotal)}</td>
-												<td>
-													{selectedJournalDebitTotal === selectedJournalCreditTotal
-														? 'Balanced'
-														: 'Out of balance'}
-												</td>
-											</tr>
-										</tfoot>
 									</table>
 								</div>
-								<div class="journal-actions">
-									<button type="button" class="primary-action" onclick={() => toggleJournalPosting(selectedJournalEntry.id)}>
-										{selectedJournalPosted ? 'Unpost entry' : 'Post entry'}
-									</button>
-									<button type="button" onclick={openSelectedJournalLedger}>
-										<GitBranch size={15} strokeWidth={2.4} />
-										Open related ledger
-									</button>
+							</section>
+						{:else if activeStage.id === 'events'}
+							<section class="event-board">
+								<div class="event-list">
+									{#each eventQueue as event (event.id)}
+										<button
+											type="button"
+											class={['event-card', selectedEventId === event.id && 'active']}
+											onclick={() => {
+												selectedEventId = event.id;
+												selectedLane = mode === 'watch' ? event.lane : null;
+												issueResolved = mode === 'watch';
+											}}
+										>
+											<small>{event.date}</small>
+											<strong>{event.event}</strong>
+											<span>{event.evidence}</span>
+										</button>
+									{/each}
 								</div>
-							</div>
-
-							<div class="posting-map">
-								<small>Posting impact</small>
-								{#each selectedJournalEntry.lines as line (`impact-${selectedJournalEntry.id}-${line.account}-${line.ref}`)}
-									<div>
-										<span>{line.debit ? 'Debit' : 'Credit'}</span>
-										<strong>{line.account}</strong>
-										<em>{money(line.debit || line.credit)}</em>
+								<div class="event-docket">
+									<small>{selectedEvent.date} - {selectedEvent.counterparty}</small>
+									<h3>{selectedEvent.event}</h3>
+									<div class="event-facts">
+										<div><span>Amount</span><strong>{selectedEvent.amount}</strong></div>
+										<div><span>Evidence</span><strong>{selectedEvent.evidence}</strong></div>
+										<div><span>Control</span><strong>{selectedEvent.control}</strong></div>
 									</div>
-								{/each}
-							</div>
-						</section>
-					{:else if activeStage.id === 'matching'}
-						<section class="matching-board">
-							<div class="workpaper-table">
-								<table>
-									<thead
-										><tr
-											><th>Document</th><th>Amount</th><th>Quantity / event</th><th>Status</th></tr
-										></thead
-									>
-									<tbody>
-										{#each matchingRows as row (row.doc)}
-											<tr
-												><td>{row.doc}</td><td>{money(row.amount)}</td><td>{row.quantity}</td><td
-													>{@render statusPill(issueResolved ? 'Resolved' : row.status)}</td
-												></tr
+									<p>{selectedEvent.trigger}</p>
+									<div class="event-question">
+										<ClipboardCheck size={17} strokeWidth={2.4} />
+										<span>{selectedEvent.accountingQuestion}</span>
+									</div>
+								</div>
+								<div class="decision-panel">
+									<small>Selected event</small>
+									<h3>Classify the accounting response</h3>
+									<div class="lane-grid">
+										{#each triageLanes as lane (lane.label)}
+											<button
+												type="button"
+												class={['lane', selectedLane === lane.label && 'active']}
+												onclick={() => {
+													selectedLane = lane.label;
+													issueResolved = lane.label === selectedEvent.lane;
+												}}
 											>
+												<strong>{lane.label}</strong>
+												<span>{lane.description}</span>
+											</button>
 										{/each}
-									</tbody>
-								</table>
-							</div>
-							<button type="button" class="primary-action" onclick={() => (issueResolved = true)}>
-								Resolve variance and apply cash
-							</button>
-						</section>
-					{:else if activeStage.id === 'ledger'}
-						<section class="ledger-workspace">
-							<div class="tabs">
-								{#each ledgerAccounts as ledger (ledger.account)}
+									</div>
+									<div class="decision-outcome">
+										<strong>
+											{selectedLane
+												? selectedLaneIsCorrect
+													? 'Correct classification'
+													: 'Needs review'
+												: 'Choose a lane'}
+										</strong>
+										<p>
+											{selectedLane
+												? selectedLaneIsCorrect
+													? selectedEvent.entryImpact
+													: selectedEvent.answer
+												: selectedEvent.accountingQuestion}
+										</p>
+										{@render statusPill(
+											selectedLane
+												? selectedLaneIsCorrect
+													? 'Learner matched'
+													: `Correct lane: ${selectedEvent.lane}`
+												: 'Awaiting classification'
+										)}
+									</div>
+								</div>
+							</section>
+						{:else if activeStage.id === 'evidence'}
+							<section class="evidence-packet">
+								<div class="document-stack">
+									{#each evidenceDocs as doc (doc.id)}
+										<button
+											type="button"
+											class={['document-row', selectedEvidenceDocId === doc.id && 'active']}
+											onclick={() => (selectedEvidenceDocId = doc.id)}
+										>
+											<span>{doc.id}</span>
+											<strong>{doc.type}</strong>
+											<p>{doc.field}</p>
+											{@render statusPill(doc.status)}
+										</button>
+									{/each}
+								</div>
+								<div class="evidence-review">
+									<small>{selectedEvidenceDoc.source}</small>
+									<h3>{selectedEvidenceDoc.type}</h3>
+									<p>{selectedEvidenceDoc.auditUse}</p>
+									<div class="extracted-fields">
+										{#each selectedEvidenceDoc.extracted as field (field)}
+											<span>{field}</span>
+										{/each}
+									</div>
+								</div>
+								<div class="packet-summary">
+									<h3>Evidence packet completeness</h3>
+									<div class="checklist">
+										<span><CheckCircle2 size={15} /> Customer and contract identified</span>
+										<span
+											><CheckCircle2 size={15} /> Billing amount and service period extracted</span
+										>
+										<span><CheckCircle2 size={15} /> Cash receipt matched to bank line</span>
+										<span><CheckCircle2 size={15} /> Revenue policy linked</span>
+									</div>
 									<button
 										type="button"
-										class={selectedLedgerAccount === ledger.account ? 'active' : ''}
-										onclick={() => (selectedLedgerAccount = ledger.account)}
+										class="primary-action"
+										onclick={() => (supportVisible = true)}
 									>
-										{ledger.account}
+										Mark packet ready
 									</button>
-								{/each}
-							</div>
-							<div class="ledger-balance">
-								<span>Ending balance</span>
-								<strong>{money(selectedLedger.ending)}</strong>
-							</div>
-							<div class="workpaper-table">
-								<table>
-									<thead
-										><tr
-											><th>Date</th><th>Source</th><th>Description</th><th>Debit</th><th>Credit</th
-											><th>Balance</th></tr
-										></thead
-									>
-									<tbody>
-										{#each selectedLedger.lines as line (`${selectedLedger.account}-${line.source}-${line.description}`)}
-											<tr>
-												<td>{line.date}</td><td>{line.source}</td><td>{line.description}</td>
-												<td>{line.debit ? money(line.debit) : ''}</td><td
-													>{line.credit ? money(line.credit) : ''}</td
-												><td>{money(line.balance)}</td>
-											</tr>
-										{/each}
-									</tbody>
-								</table>
-							</div>
-						</section>
-					{:else if activeStage.id === 'cutoff'}
-						<section class="workpaper-table">
-							<table>
-								<thead><tr><th>Item</th><th>Date</th><th>Decision</th><th>Impact</th></tr></thead>
-								<tbody>
-									{#each cutoffRows as row (row.item)}
-										<tr
-											><td>{row.item}</td><td>{row.date}</td><td
-												>{@render statusPill(issueResolved ? row.decision : 'Review')}</td
-											><td>{row.impact}</td></tr
-										>
-									{/each}
-								</tbody>
-							</table>
-						</section>
-					{:else if activeStage.id === 'adjustments'}
-						<section class="workpaper-table">
-							<table>
-								<thead
-									><tr
-										><th>Workpaper</th><th>Entry</th><th>Amount</th><th>Support</th><th>Status</th
-										></tr
-									></thead
-								>
-								<tbody>
-									{#each adjustmentRows as row (row.workpaper)}
-										<tr
-											><td>{row.workpaper}</td><td>{row.entry}</td><td>{money(row.amount)}</td><td
-												>{row.support}</td
-											><td
-												>{@render statusPill(
-													issueResolved && row.status === 'Flagged' ? 'Escalated' : row.status
-												)}</td
-											></tr
-										>
-									{/each}
-								</tbody>
-							</table>
-						</section>
-					{:else if activeStage.id === 'reconciliations'}
-						<section class="workpaper-table">
-							<table>
-								<thead
-									><tr
-										><th>Account</th><th>GL</th><th>Support</th><th>Difference</th><th>Owner</th><th
-											>Status</th
-										></tr
-									></thead
-								>
-								<tbody>
-									{#each reconciliationRows as row (row.account)}
-										<tr>
-											<td>{row.account}</td><td>{money(row.gl)}</td><td>{money(row.support)}</td><td
-												>{money(issueResolved ? 0 : row.difference)}</td
-											><td>{row.owner}</td><td
-												>{@render statusPill(issueResolved ? 'Tied' : row.status)}</td
-											>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</section>
-					{:else if activeStage.id === 'trial'}
-						<section class="trial-workspace">
-							<div class="trial-summary">
-								<div><small>Total debits</small><strong>{money(trialDebitTotal)}</strong></div>
-								<div><small>Total credits</small><strong>{money(trialCreditTotal)}</strong></div>
-								<div>
-									<small>Difference</small><strong
-										>{money(trialDebitTotal - trialCreditTotal)}</strong
-									>
+									{#if supportVisible}
+										<p class="success-note">
+											Packet is ready for accounting interpretation and later audit trace.
+										</p>
+									{/if}
 								</div>
-							</div>
-							<div class="workpaper-table wide">
-								<table>
-									<thead
-										><tr
-											><th>Account</th><th>Debit</th><th>Credit</th><th>Mapping</th><th>Review</th
-											></tr
-										></thead
-									>
-									<tbody>
-										{#each trialBalanceRows as row (row.account)}
-											<tr>
-												<td>{row.account}</td><td>{row.debit ? money(row.debit) : ''}</td><td
-													>{row.credit ? money(row.credit) : ''}</td
-												><td>{row.mapping}</td><td>{@render statusPill(row.review)}</td>
-											</tr>
-										{/each}
-									</tbody>
-								</table>
-							</div>
-						</section>
-					{:else if activeStage.id === 'consolidation'}
-						<section class="consolidation-canvas">
-							<div class="entity-card">
-								<small>Parent</small><strong>Nimbus Bikes US</strong><span
-									>TB imports $7.4m assets</span
-								>
-							</div>
-							<div class="elimination-card">
-								<GitBranch size={22} /><strong>Eliminate IC sale</strong><span
-									>Dr revenue 85 / Cr COGS 85</span
-								>
-							</div>
-							<div class="entity-card">
-								<small>Subsidiary</small><strong>Nimbus Canada</strong><span
-									>Translated at Jan close rates</span
-								>
-							</div>
-							<div class="consolidated-card">
-								<small>Group</small><strong>Consolidated Nimbus Bikes</strong><span
-									>Intercompany balances removed; CTA tracked in equity</span
-								>
-							</div>
-						</section>
-					{:else if activeStage.id === 'mapping'}
-						<section class="mapping-matrix">
-							<div class="workpaper-table">
-								<table>
-									<thead
-										><tr
-											><th>GL account</th><th>Statement</th><th>Line item</th><th>Support / note</th
-											></tr
-										></thead
-									>
-									<tbody>
-										{#each mappingRows as row (row.account)}
-											<tr
-												><td>{row.account}</td><td>{row.statement}</td><td>{row.line}</td><td
-													>{row.note}</td
-												></tr
-											>
-										{/each}
-									</tbody>
-								</table>
-							</div>
-							{#if supportVisible}
-								<div class="trace-panel">
-									<strong>Mapping check</strong>
+							</section>
+						{:else if activeStage.id === 'judgment'}
+							<section class="judgment-tree">
+								<div class="judgment-steps">
+									{#each judgmentSteps as step, index (step.label)}
+										<button
+											type="button"
+											class={['judgment-step', selectedJudgmentStepIndex === index && 'active']}
+											onclick={() => (selectedJudgmentStepIndex = index)}
+										>
+											<span>{String(index + 1).padStart(2, '0')}</span>
+											<strong>{step.label}</strong>
+											<p>{step.result}</p>
+										</button>
+									{/each}
+								</div>
+								<div class="judgment-memo">
+									<small>{selectedJudgmentStep.evidence}</small>
+									<h3>{selectedJudgmentStep.question}</h3>
+									<p>{selectedJudgmentStep.memo}</p>
+									<div>
+										<AlertTriangle size={16} strokeWidth={2.3} />
+										<span>{selectedJudgmentStep.risk}</span>
+									</div>
+								</div>
+								<div class="decision-panel">
+									<small>Accounting treatment</small>
+									<h3>How should Nimbus recognize the $12,000 contract?</h3>
+									<div class="choice-stack">
+										<button
+											type="button"
+											class={selectedTreatment === 'immediate' ? 'active' : ''}
+											onclick={() => (selectedTreatment = 'immediate')}
+										>
+											Recognize all revenue immediately
+										</button>
+										<button
+											type="button"
+											class={selectedTreatment === 'over-time' ? 'active' : ''}
+											onclick={() => (selectedTreatment = 'over-time')}
+										>
+											Defer and recognize over the service term
+										</button>
+									</div>
 									<p>
-										Every active trial balance account has a statement destination and support
-										reference.
+										{selectedTreatment === 'over-time'
+											? 'Correct. January recognizes $1,000 of service revenue and leaves $11,000 as deferred revenue.'
+											: 'This would overstate January revenue and understate the remaining performance obligation.'}
 									</p>
+									<div class="mini-entry">
+										<div><span>Debit</span><strong>Deferred revenue</strong><em>$1,000</em></div>
+										<div><span>Credit</span><strong>Service revenue</strong><em>$1,000</em></div>
+									</div>
 								</div>
-							{/if}
-						</section>
-					{:else if activeStage.id === 'statements'}
-						<section class="statement-binder">
-							<div class="tabs">
-								<button
-									type="button"
-									class={statementTab === 'balance' ? 'active' : ''}
-									onclick={() => (statementTab = 'balance')}>Balance sheet</button
-								>
-								<button
-									type="button"
-									class={statementTab === 'income' ? 'active' : ''}
-									onclick={() => (statementTab = 'income')}>Income statement</button
-								>
-								<button
-									type="button"
-									class={statementTab === 'cash' ? 'active' : ''}
-									onclick={() => (statementTab = 'cash')}>Cash flows</button
-								>
-								<button
-									type="button"
-									class={statementTab === 'equity' ? 'active' : ''}
-									onclick={() => (statementTab = 'equity')}>Equity</button
-								>
-							</div>
-							<header class="statement-title">
-								<small>Nimbus Bikes, Inc.</small>
-								<h3>
-									{statementTab === 'balance'
-										? 'Condensed Balance Sheets'
-										: statementTab === 'income'
-											? 'Condensed Statements of Operations'
-											: statementTab === 'cash'
-												? 'Condensed Statements of Cash Flows'
-												: 'Condensed Statements of Stockholders Equity'}
-								</h3>
-							</header>
-							{@render statementTable(statementSections)}
-						</section>
-					{:else if activeStage.id === 'cash-flow'}
-						<section class="cash-bridge">
-							<div class="bridge-total">
-								<small>Ending cash ties to balance sheet</small>
-								<strong>{money(1820)}</strong>
-							</div>
-							<div class="bridge-grid">
-								{#each cashBridge as item, index (item.label)}
-									<button
-										type="button"
-										class={['bridge-item', cashFocus === index && 'active']}
-										onclick={() => (cashFocus = index)}
-									>
-										<small>{item.type}</small>
-										<strong>{signedMoney(item.amount)}</strong>
-										<span>{item.label}</span>
-									</button>
-								{/each}
-							</div>
-							<p class="trace-panel">{cashBridge[cashFocus].explanation}</p>
-						</section>
-					{:else if activeStage.id === 'disclosures'}
-						<section class="disclosure-binder">
-							<div class="tabs">
-								{#each disclosures as disclosure (disclosure.id)}
-									<button
-										type="button"
-										class={disclosureTab === disclosure.id ? 'active' : ''}
-										onclick={() => (disclosureTab = disclosure.id)}
-									>
-										{disclosure.label}
-									</button>
-								{/each}
-							</div>
-							<div class="workpaper-table">
+							</section>
+						{:else if activeStage.id === 'subledger'}
+							<section class="subledger-workspace">
+								<div class="record-toolbar">
+									<div>
+										<small>Subledger source</small>
+										<strong>{selectedSubledgerMeta.source}</strong>
+									</div>
+									<span>{selectedSubledgerMeta.label}</span>
+								</div>
+								<div class="tabs subledger-tabs">
+									{#each subledgerTabs as tab (tab.id)}
+										<button
+											type="button"
+											class={selectedSubledger === tab.id ? 'active' : ''}
+											onclick={() => (selectedSubledger = tab.id)}
+										>
+											{tab.label}
+										</button>
+									{/each}
+								</div>
+								<div class="record-split">
+									<div class="workpaper-table subledger-table">
+										<table>
+											{#if selectedSubledger === 'ar'}
+												<thead>
+													<tr>
+														<th>Customer</th>
+														<th>Invoice</th>
+														<th>Current</th>
+														<th>Past due</th>
+														<th>Status</th>
+													</tr>
+												</thead>
+												<tbody>
+													{#each arAging as row (row.invoice)}
+														<tr>
+															<td>{row.customer}</td>
+															<td>{row.invoice}</td>
+															<td>{money(row.current)}</td>
+															<td>{money(row.pastDue)}</td>
+															<td>{@render statusPill(row.status)}</td>
+														</tr>
+													{/each}
+												</tbody>
+											{:else if selectedSubledger === 'revenue'}
+												<thead>
+													<tr>
+														<th>Month</th>
+														<th>Billings</th>
+														<th>Revenue</th>
+														<th>Deferred ending</th>
+														<th>Status</th>
+													</tr>
+												</thead>
+												<tbody>
+													{#each revenueSchedule as row (row.month)}
+														<tr>
+															<td>{row.month}</td>
+															<td>{money(row.billings)}</td>
+															<td>{money(row.revenue)}</td>
+															<td>{money(row.deferredEnding)}</td>
+															<td>{@render statusPill(row.status)}</td>
+														</tr>
+													{/each}
+												</tbody>
+											{:else if selectedSubledger === 'inventory'}
+												<thead>
+													<tr>
+														<th>SKU</th>
+														<th>Receipt</th>
+														<th>Units</th>
+														<th>Unit cost</th>
+														<th>Total</th>
+														<th>Status</th>
+													</tr>
+												</thead>
+												<tbody>
+													{#each inventoryLayers as row (row.receipt)}
+														<tr>
+															<td>{row.sku}</td>
+															<td>{row.receipt}</td>
+															<td>{row.units}</td>
+															<td>{money(row.unitCost)}</td>
+															<td>{money(row.total)}</td>
+															<td>{@render statusPill(row.status)}</td>
+														</tr>
+													{/each}
+												</tbody>
+											{:else}
+												<thead>
+													<tr>
+														<th>Vendor</th>
+														<th>Bill</th>
+														<th>Current</th>
+														<th>Past due</th>
+														<th>Status</th>
+													</tr>
+												</thead>
+												<tbody>
+													{#each apAging as row (row.bill)}
+														<tr>
+															<td>{row.vendor}</td>
+															<td>{row.bill}</td>
+															<td>{money(row.current)}</td>
+															<td>{money(row.pastDue)}</td>
+															<td>{@render statusPill(row.status)}</td>
+														</tr>
+													{/each}
+												</tbody>
+											{/if}
+										</table>
+									</div>
+									<aside class="record-note">
+										<small>Subledger role</small>
+										<h3>{selectedSubledgerMeta.label}</h3>
+										<p>{selectedSubledgerMeta.result}</p>
+										<div>
+											<CheckCircle2 size={16} strokeWidth={2.4} />
+											<span>{selectedSubledgerMeta.control}</span>
+										</div>
+									</aside>
+								</div>
+							</section>
+						{:else if activeStage.id === 'journal'}
+							<section class="journal-workbench">
+								<div class="journal-list">
+									{#each journalEntries as entry (entry.id)}
+										<button
+											type="button"
+											class={['journal-card', selectedJournalId === entry.id && 'active']}
+											onclick={() => (selectedJournalId = entry.id)}
+										>
+											<span>{entry.date}</span>
+											<strong>{entry.id}</strong>
+											<small>{entry.title}</small>
+											{@render statusPill(postedJournalIds.includes(entry.id) ? 'Posted' : 'Draft')}
+										</button>
+									{/each}
+								</div>
+
+								<div class="journal-entry-detail">
+									<header class="journal-detail-header">
+										<div>
+											<small>{selectedJournalEntry.source}</small>
+											<h3>{selectedJournalEntry.id}: {selectedJournalEntry.title}</h3>
+										</div>
+										{@render statusPill(selectedJournalPosted ? 'Posted' : 'Ready')}
+									</header>
+									<p>{selectedJournalEntry.purpose}</p>
+									<div class="journal-meta">
+										<div><span>Date</span><strong>{selectedJournalEntry.date}</strong></div>
+										<div><span>Control</span><strong>{selectedJournalEntry.control}</strong></div>
+									</div>
+									<div class="workpaper-table journal-sheet">
+										<table>
+											<thead>
+												<tr><th>Account</th><th>Debit</th><th>Credit</th><th>Source</th></tr>
+											</thead>
+											<tbody>
+												{#each selectedJournalEntry.lines as line (`${selectedJournalEntry.id}-${line.account}-${line.ref}`)}
+													<tr>
+														<td>{line.account}</td>
+														<td>{line.debit ? money(line.debit) : ''}</td>
+														<td>{line.credit ? money(line.credit) : ''}</td>
+														<td>{line.ref}</td>
+													</tr>
+												{/each}
+											</tbody>
+											<tfoot>
+												<tr>
+													<td>Entry total</td>
+													<td>{money(selectedJournalDebitTotal)}</td>
+													<td>{money(selectedJournalCreditTotal)}</td>
+													<td>
+														{selectedJournalDebitTotal === selectedJournalCreditTotal
+															? 'Balanced'
+															: 'Out of balance'}
+													</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+									<div class="journal-actions">
+										<button
+											type="button"
+											class="primary-action"
+											onclick={() => toggleJournalPosting(selectedJournalEntry.id)}
+										>
+											{selectedJournalPosted ? 'Unpost entry' : 'Post entry'}
+										</button>
+										<button type="button" onclick={openSelectedJournalLedger}>
+											<GitBranch size={15} strokeWidth={2.4} />
+											Open related ledger
+										</button>
+									</div>
+								</div>
+
+								<div class="posting-map">
+									<small>Posting impact</small>
+									{#each selectedJournalEntry.lines as line (`impact-${selectedJournalEntry.id}-${line.account}-${line.ref}`)}
+										<div>
+											<span>{line.debit ? 'Debit' : 'Credit'}</span>
+											<strong>{line.account}</strong>
+											<em>{money(line.debit || line.credit)}</em>
+										</div>
+									{/each}
+								</div>
+							</section>
+						{:else if activeStage.id === 'matching'}
+							<section class="matching-board">
+								<div class="workpaper-table">
+									<table>
+										<thead
+											><tr
+												><th>Document</th><th>Amount</th><th>Quantity / event</th><th>Status</th
+												></tr
+											></thead
+										>
+										<tbody>
+											{#each matchingRows as row (row.doc)}
+												<tr
+													><td>{row.doc}</td><td>{money(row.amount)}</td><td>{row.quantity}</td><td
+														>{@render statusPill(issueResolved ? 'Resolved' : row.status)}</td
+													></tr
+												>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+								<button type="button" class="primary-action" onclick={() => (issueResolved = true)}>
+									Resolve variance and apply cash
+								</button>
+							</section>
+						{:else if activeStage.id === 'ledger'}
+							<section class="ledger-workspace">
+								<div class="tabs">
+									{#each ledgerAccounts as ledger (ledger.account)}
+										<button
+											type="button"
+											class={selectedLedgerAccount === ledger.account ? 'active' : ''}
+											onclick={() => (selectedLedgerAccount = ledger.account)}
+										>
+											{ledger.account}
+										</button>
+									{/each}
+								</div>
+								<div class="ledger-balance">
+									<span>Ending balance</span>
+									<strong>{money(selectedLedger.ending)}</strong>
+								</div>
+								<div class="workpaper-table">
+									<table>
+										<thead
+											><tr
+												><th>Date</th><th>Source</th><th>Description</th><th>Debit</th><th
+													>Credit</th
+												><th>Balance</th></tr
+											></thead
+										>
+										<tbody>
+											{#each selectedLedger.lines as line (`${selectedLedger.account}-${line.source}-${line.description}`)}
+												<tr>
+													<td>{line.date}</td><td>{line.source}</td><td>{line.description}</td>
+													<td>{line.debit ? money(line.debit) : ''}</td><td
+														>{line.credit ? money(line.credit) : ''}</td
+													><td>{money(line.balance)}</td>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						{:else if activeStage.id === 'cutoff'}
+							<section class="workpaper-table">
 								<table>
-									<thead
-										><tr
-											><th>Disclosure fact</th><th>Amount</th><th>Statement source</th><th
-												>Status</th
-											></tr
-										></thead
-									>
+									<thead><tr><th>Item</th><th>Date</th><th>Decision</th><th>Impact</th></tr></thead>
 									<tbody>
-										{#each activeDisclosure.rows as row (row.label)}
+										{#each cutoffRows as row (row.item)}
 											<tr
-												><td>{row.label}</td><td>{signedMoney(row.amount)}</td><td
-													>{row.statement}</td
-												><td>{@render statusPill(row.status)}</td></tr
+												><td>{row.item}</td><td>{row.date}</td><td
+													>{@render statusPill(issueResolved ? row.decision : 'Review')}</td
+												><td>{row.impact}</td></tr
 											>
 										{/each}
 									</tbody>
 								</table>
-							</div>
-						</section>
-					{:else if activeStage.id === 'tie-out'}
-						<section class="workpaper-table">
-							<table>
-								<thead
-									><tr
-										><th>Fact</th><th>Statement</th><th>Note</th><th>MD&A</th><th>XBRL tag</th><th
-											>Status</th
-										></tr
-									></thead
-								>
-								<tbody>
-									{#each tieOutRows as row (row.fact)}
-										<tr>
-											<td>{row.fact}</td><td>{money(row.statement)}</td><td
-												>{money(
-													issueResolved && row.status.includes('Broken') ? row.statement : row.note
-												)}</td
-											><td>{money(row.mda)}</td><td>{row.tag}</td><td
-												>{@render statusPill(issueResolved ? 'Tied' : row.status)}</td
-											>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</section>
-					{:else if activeStage.id === 'controls'}
-						<section class="workpaper-table">
-							<table>
-								<thead
-									><tr><th>Control</th><th>Owner</th><th>Evidence</th><th>Status</th></tr></thead
-								>
-								<tbody>
-									{#each controlRows as row (row.control)}
-										<tr
-											><td>{row.control}</td><td>{row.owner}</td><td>{row.evidence}</td><td
-												>{@render statusPill(issueResolved ? 'Effective' : row.status)}</td
-											></tr
-										>
-									{/each}
-								</tbody>
-							</table>
-						</section>
-					{:else if activeStage.id === 'audit'}
-						<section class="audit-board">
-							<div class="request-list">
-								{#each auditRequests as request (request.id)}
-									<button
-										type="button"
-										class={selectedAuditId === request.id ? 'active' : ''}
-										onclick={() => (selectedAuditId = request.id)}
-									>
-										<span>{request.id}</span>
-										<strong>{request.request}</strong>
-										{@render statusPill(request.status)}
-									</button>
-								{/each}
-							</div>
-							<div class="trace-panel">
-								<strong>Evidence package</strong>
-								<p>{selectedAudit.evidence}</p>
-							</div>
-						</section>
-					{:else if activeStage.id === 'filing'}
-						<section class="filing-builder">
-							<div class="filing-cover">
-								<small>Mock Form 10-Q</small>
-								<strong>Nimbus Bikes, Inc.</strong>
-								<span>Quarter ended March 31, 2026</span>
-							</div>
-							<div class="workpaper-table">
+							</section>
+						{:else if activeStage.id === 'adjustments'}
+							<section class="workpaper-table">
 								<table>
-									<thead><tr><th>Section</th><th>Owner</th><th>Status</th></tr></thead>
+									<thead
+										><tr
+											><th>Workpaper</th><th>Entry</th><th>Amount</th><th>Support</th><th>Status</th
+											></tr
+										></thead
+									>
 									<tbody>
-										{#each filingSections as section, index (section.section)}
-											<tr class={filingStep === index ? 'selected-row' : ''}>
-												<td>{section.section}</td><td>{section.owner}</td><td
+										{#each adjustmentRows as row (row.workpaper)}
+											<tr
+												><td>{row.workpaper}</td><td>{row.entry}</td><td>{money(row.amount)}</td><td
+													>{row.support}</td
+												><td
 													>{@render statusPill(
-														index <= filingStep ? section.status : 'Waiting'
+														issueResolved && row.status === 'Flagged' ? 'Escalated' : row.status
 													)}</td
+												></tr
+											>
+										{/each}
+									</tbody>
+								</table>
+							</section>
+						{:else if activeStage.id === 'reconciliations'}
+							<section class="workpaper-table">
+								<table>
+									<thead
+										><tr
+											><th>Account</th><th>GL</th><th>Support</th><th>Difference</th><th>Owner</th
+											><th>Status</th></tr
+										></thead
+									>
+									<tbody>
+										{#each reconciliationRows as row (row.account)}
+											<tr>
+												<td>{row.account}</td><td>{money(row.gl)}</td><td>{money(row.support)}</td
+												><td>{money(issueResolved ? 0 : row.difference)}</td><td>{row.owner}</td><td
+													>{@render statusPill(issueResolved ? 'Tied' : row.status)}</td
 												>
 											</tr>
 										{/each}
 									</tbody>
 								</table>
-							</div>
-						</section>
-					{:else}
-						<section class="debrief-board">
-							<div class="metric-card">
-								<small>Close duration</small><strong>6.5 days</strong><span
-									>Target next month: 5.5</span
-								>
-							</div>
-							<div class="metric-card">
-								<small>Open audit follow-ups</small><strong>1</strong><span>Manual JE support</span>
-							</div>
-							<div class="metric-card">
-								<small>Recurring exception</small><strong>RNI cutoff</strong><span
-									>Move review two days earlier</span
-								>
-							</div>
-							<div class="metric-card">
-								<small>Automation candidate</small><strong>PPE rollforward</strong><span
-									>Template and data feed ready</span
-								>
-							</div>
-						</section>
-					{/if}
+							</section>
+						{:else if activeStage.id === 'trial'}
+							<section class="trial-workspace">
+								<div class="trial-summary">
+									<div><small>Total debits</small><strong>{money(trialDebitTotal)}</strong></div>
+									<div><small>Total credits</small><strong>{money(trialCreditTotal)}</strong></div>
+									<div>
+										<small>Difference</small><strong
+											>{money(trialDebitTotal - trialCreditTotal)}</strong
+										>
+									</div>
+								</div>
+								<div class="workpaper-table wide">
+									<table>
+										<thead
+											><tr
+												><th>Account</th><th>Debit</th><th>Credit</th><th>Mapping</th><th>Review</th
+												></tr
+											></thead
+										>
+										<tbody>
+											{#each trialBalanceRows as row (row.account)}
+												<tr>
+													<td>{row.account}</td><td>{row.debit ? money(row.debit) : ''}</td><td
+														>{row.credit ? money(row.credit) : ''}</td
+													><td>{row.mapping}</td><td>{@render statusPill(row.review)}</td>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						{:else if activeStage.id === 'consolidation'}
+							<section class="consolidation-canvas">
+								<div class="entity-card">
+									<small>Parent</small><strong>Nimbus Bikes US</strong><span
+										>TB imports $7.4m assets</span
+									>
+								</div>
+								<div class="elimination-card">
+									<GitBranch size={22} /><strong>Eliminate IC sale</strong><span
+										>Dr revenue 85 / Cr COGS 85</span
+									>
+								</div>
+								<div class="entity-card">
+									<small>Subsidiary</small><strong>Nimbus Canada</strong><span
+										>Translated at Jan close rates</span
+									>
+								</div>
+								<div class="consolidated-card">
+									<small>Group</small><strong>Consolidated Nimbus Bikes</strong><span
+										>Intercompany balances removed; CTA tracked in equity</span
+									>
+								</div>
+							</section>
+						{:else if activeStage.id === 'mapping'}
+							<section class="mapping-matrix">
+								<div class="workpaper-table">
+									<table>
+										<thead
+											><tr
+												><th>GL account</th><th>Statement</th><th>Line item</th><th
+													>Support / note</th
+												></tr
+											></thead
+										>
+										<tbody>
+											{#each mappingRows as row (row.account)}
+												<tr
+													><td>{row.account}</td><td>{row.statement}</td><td>{row.line}</td><td
+														>{row.note}</td
+													></tr
+												>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+								{#if supportVisible}
+									<div class="trace-panel">
+										<strong>Mapping check</strong>
+										<p>
+											Every active trial balance account has a statement destination and support
+											reference.
+										</p>
+									</div>
+								{/if}
+							</section>
+						{:else if activeStage.id === 'statements'}
+							<section class="statement-binder">
+								<div class="tabs">
+									<button
+										type="button"
+										class={statementTab === 'balance' ? 'active' : ''}
+										onclick={() => (statementTab = 'balance')}>Balance sheet</button
+									>
+									<button
+										type="button"
+										class={statementTab === 'income' ? 'active' : ''}
+										onclick={() => (statementTab = 'income')}>Income statement</button
+									>
+									<button
+										type="button"
+										class={statementTab === 'cash' ? 'active' : ''}
+										onclick={() => (statementTab = 'cash')}>Cash flows</button
+									>
+									<button
+										type="button"
+										class={statementTab === 'equity' ? 'active' : ''}
+										onclick={() => (statementTab = 'equity')}>Equity</button
+									>
+								</div>
+								<header class="statement-title">
+									<small>Nimbus Bikes, Inc.</small>
+									<h3>
+										{statementTab === 'balance'
+											? 'Condensed Balance Sheets'
+											: statementTab === 'income'
+												? 'Condensed Statements of Operations'
+												: statementTab === 'cash'
+													? 'Condensed Statements of Cash Flows'
+													: 'Condensed Statements of Stockholders Equity'}
+									</h3>
+								</header>
+								{@render statementTable(statementSections)}
+							</section>
+						{:else if activeStage.id === 'cash-flow'}
+							<section class="cash-bridge">
+								<div class="bridge-total">
+									<small>Ending cash ties to balance sheet</small>
+									<strong>{money(1820)}</strong>
+								</div>
+								<div class="bridge-grid">
+									{#each cashBridge as item, index (item.label)}
+										<button
+											type="button"
+											class={['bridge-item', cashFocus === index && 'active']}
+											onclick={() => (cashFocus = index)}
+										>
+											<small>{item.type}</small>
+											<strong>{signedMoney(item.amount)}</strong>
+											<span>{item.label}</span>
+										</button>
+									{/each}
+								</div>
+								<p class="trace-panel">{cashBridge[cashFocus].explanation}</p>
+							</section>
+						{:else if activeStage.id === 'disclosures'}
+							<section class="disclosure-binder">
+								<div class="tabs">
+									{#each disclosures as disclosure (disclosure.id)}
+										<button
+											type="button"
+											class={disclosureTab === disclosure.id ? 'active' : ''}
+											onclick={() => (disclosureTab = disclosure.id)}
+										>
+											{disclosure.label}
+										</button>
+									{/each}
+								</div>
+								<div class="workpaper-table">
+									<table>
+										<thead
+											><tr
+												><th>Disclosure fact</th><th>Amount</th><th>Statement source</th><th
+													>Status</th
+												></tr
+											></thead
+										>
+										<tbody>
+											{#each activeDisclosure.rows as row (row.label)}
+												<tr
+													><td>{row.label}</td><td>{signedMoney(row.amount)}</td><td
+														>{row.statement}</td
+													><td>{@render statusPill(row.status)}</td></tr
+												>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						{:else if activeStage.id === 'tie-out'}
+							<section class="workpaper-table wide tie-out-table">
+								<table>
+									<thead
+										><tr
+											><th>Fact</th><th>Statement</th><th>Note</th><th>MD&A</th><th>XBRL tag</th><th
+												>Status</th
+											></tr
+										></thead
+									>
+									<tbody>
+										{#each tieOutRows as row (row.fact)}
+											<tr>
+												<td>{row.fact}</td><td>{money(row.statement)}</td><td
+													>{money(
+														issueResolved && row.status.includes('Broken')
+															? row.statement
+															: row.note
+													)}</td
+												><td>{money(row.mda)}</td><td>{row.tag}</td><td
+													>{@render statusPill(issueResolved ? 'Tied' : row.status)}</td
+												>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</section>
+						{:else if activeStage.id === 'controls'}
+							<section class="workpaper-table">
+								<table>
+									<thead
+										><tr><th>Control</th><th>Owner</th><th>Evidence</th><th>Status</th></tr></thead
+									>
+									<tbody>
+										{#each controlRows as row (row.control)}
+											<tr
+												><td>{row.control}</td><td>{row.owner}</td><td>{row.evidence}</td><td
+													>{@render statusPill(issueResolved ? 'Effective' : row.status)}</td
+												></tr
+											>
+										{/each}
+									</tbody>
+								</table>
+							</section>
+						{:else if activeStage.id === 'audit'}
+							<section class="audit-board">
+								<div class="request-list">
+									{#each auditRequests as request (request.id)}
+										<button
+											type="button"
+											class={selectedAuditId === request.id ? 'active' : ''}
+											onclick={() => (selectedAuditId = request.id)}
+										>
+											<span>{request.id}</span>
+											<strong>{request.request}</strong>
+											{@render statusPill(request.status)}
+										</button>
+									{/each}
+								</div>
+								<div class="trace-panel">
+									<strong>Evidence package</strong>
+									<p>{selectedAudit.evidence}</p>
+								</div>
+							</section>
+						{:else if activeStage.id === 'filing'}
+							<section class="filing-builder">
+								<div class="filing-cover">
+									<small>Mock Form 10-Q</small>
+									<strong>Nimbus Bikes, Inc.</strong>
+									<span>Quarter ended March 31, 2026</span>
+								</div>
+								<div class="workpaper-table">
+									<table>
+										<thead><tr><th>Section</th><th>Owner</th><th>Status</th></tr></thead>
+										<tbody>
+											{#each filingSections as section, index (section.section)}
+												<tr class={filingStep === index ? 'selected-row' : ''}>
+													<td>{section.section}</td><td>{section.owner}</td><td
+														>{@render statusPill(
+															index <= filingStep ? section.status : 'Waiting'
+														)}</td
+													>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						{:else}
+							<section class="debrief-board">
+								<div class="metric-card">
+									<small>Close duration</small><strong>6.5 days</strong><span
+										>Target next month: 5.5</span
+									>
+								</div>
+								<div class="metric-card">
+									<small>Open audit follow-ups</small><strong>1</strong><span
+										>Manual JE support</span
+									>
+								</div>
+								<div class="metric-card">
+									<small>Recurring exception</small><strong>RNI cutoff</strong><span
+										>Move review two days earlier</span
+									>
+								</div>
+								<div class="metric-card">
+									<small>Automation candidate</small><strong>PPE rollforward</strong><span
+										>Template and data feed ready</span
+									>
+								</div>
+							</section>
+						{/if}
 
-					{#if activeStage.id === 'filing' || activeStage.id === 'debrief'}
-						<div class="trace-ladder">
-							{#each traceNodes as node, index (node.label)}
-								<button
-									type="button"
-									class={traceIndex === index ? 'active' : ''}
-									onclick={() => (traceIndex = index)}
-								>
-									<span>{String(index + 1).padStart(2, '0')}</span>
-									<strong>{node.label}</strong>
-									<small>{node.value}</small>
-								</button>
-							{/each}
-						</div>
-						<p class="trace-panel">{traceNodes[traceIndex].detail}</p>
-					{/if}
-				</div>
+						{#if activeStage.id === 'filing' || activeStage.id === 'debrief'}
+							<div class="trace-ladder">
+								{#each traceNodes as node, index (node.label)}
+									<button
+										type="button"
+										class={traceIndex === index ? 'active' : ''}
+										onclick={() => (traceIndex = index)}
+									>
+										<span>{String(index + 1).padStart(2, '0')}</span>
+										<strong>{node.label}</strong>
+										<small>{node.value}</small>
+									</button>
+								{/each}
+							</div>
+							<p class="trace-panel">{traceNodes[traceIndex].detail}</p>
+						{/if}
+					</div>
+				</section>
 			</section>
-		</section>
 
-		<footer class="sequence-bar" aria-label="Stage navigation">
-			<button type="button" class="sequence-button" onclick={previousStage} disabled={activeIndex === 0}>
-				<ArrowLeft size={17} strokeWidth={2.4} />
-				<span>Previous</span>
-			</button>
-			<span>{String(activeIndex + 1).padStart(2, '0')} of {String(stages.length).padStart(2, '0')}</span>
-			<button
-				type="button"
-				class="sequence-button next"
-				onclick={nextStage}
-				disabled={activeIndex === stages.length - 1}
-			>
-				<span>Next</span>
-				<ArrowRight size={17} strokeWidth={2.4} />
-			</button>
-		</footer>
-	</div>
+			<footer class="sequence-bar" aria-label="Stage navigation">
+				<button
+					type="button"
+					class="sequence-button"
+					onclick={previousStage}
+					disabled={activeIndex === 0}
+				>
+					<ArrowLeft size={17} strokeWidth={2.4} />
+					<span>Previous</span>
+				</button>
+				<span
+					>{String(activeIndex + 1).padStart(2, '0')} of {String(stages.length).padStart(
+						2,
+						'0'
+					)}</span
+				>
+				<button
+					type="button"
+					class="sequence-button next"
+					onclick={nextStage}
+					disabled={activeIndex === stages.length - 1}
+				>
+					<span>Next</span>
+					<ArrowRight size={17} strokeWidth={2.4} />
+				</button>
+			</footer>
+		</div>
 	{/if}
 </main>
 
@@ -4265,11 +4409,21 @@
 	button {
 		border: 0;
 		cursor: pointer;
+		transition:
+			border-color 140ms ease,
+			background-color 140ms ease,
+			color 140ms ease,
+			opacity 140ms ease;
 	}
 
 	button:disabled {
 		cursor: not-allowed;
 		opacity: 0.45;
+	}
+
+	button:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+		outline-offset: 3px;
 	}
 
 	:global(svg) {
@@ -4281,12 +4435,17 @@
 		border-collapse: collapse;
 	}
 
+	.workpaper-table table {
+		min-width: 720px;
+	}
+
 	th,
 	td {
 		border-bottom: 1px solid var(--line);
 		padding: 10px 11px;
 		text-align: left;
 		vertical-align: top;
+		overflow-wrap: anywhere;
 	}
 
 	th {
@@ -4329,6 +4488,7 @@
 	.brand {
 		gap: 8px;
 		color: var(--ink);
+		background: transparent;
 	}
 
 	.brand :global(svg) {
@@ -4347,14 +4507,27 @@
 		background: transparent;
 	}
 
+	.theme-toggle-floating {
+		position: fixed;
+		z-index: 70;
+		top: 18px;
+		right: 20px;
+		width: 34px;
+		min-height: 34px;
+		color: color-mix(in srgb, var(--ink) 82%, transparent);
+		text-shadow: 0 1px 14px color-mix(in srgb, var(--bg) 82%, transparent);
+	}
+
 	.theme-toggle:hover {
 		color: var(--accent);
 	}
 
 	.entry-page {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
 		height: 100vh;
 		overflow-y: auto;
-		padding-top: var(--header-height);
+		padding-top: 0;
 		background: var(--bg);
 	}
 
@@ -4398,11 +4571,10 @@
 		position: relative;
 		z-index: 2;
 		display: grid;
-		gap: 18px;
-		max-width: min(680px, 60vw);
+		gap: 22px;
+		max-width: min(760px, 64vw);
 	}
 
-	.entry-hero-content small,
 	.entry-preview-copy small {
 		color: var(--accent-2);
 		font-size: 0.74rem;
@@ -4411,11 +4583,22 @@
 		letter-spacing: 0.16em;
 	}
 
-	.entry-hero-content h1 {
-		max-width: 15ch;
+	.entry-hero-brand {
+		display: grid;
+		gap: 18px;
+		align-items: start;
+	}
+
+	.entry-hero-mark {
+		color: var(--accent);
+		filter: drop-shadow(0 10px 22px color-mix(in srgb, var(--bg) 58%, transparent));
+	}
+
+	.entry-hero-brand h1 {
+		max-width: 11ch;
 		margin: 0;
-		font-size: clamp(2.55rem, 5.1vw, 4.65rem);
-		line-height: 0.98;
+		font-size: clamp(4.1rem, 7.6vw, 7.9rem);
+		line-height: 0.88;
 		letter-spacing: 0;
 	}
 
@@ -4534,11 +4717,11 @@
 
 	.entry-preview {
 		display: grid;
-		grid-template-columns: minmax(260px, 0.8fr) minmax(520px, 1.2fr);
-		gap: 22px;
-		align-items: center;
+		grid-template-columns: minmax(260px, 0.72fr) minmax(520px, 1.28fr);
+		gap: 20px 28px;
+		align-items: start;
 		border-bottom: 1px solid var(--line);
-		padding: 22px clamp(24px, 5vw, 74px);
+		padding: 24px clamp(24px, 5vw, 74px) 22px;
 		background: color-mix(in srgb, var(--surface) 72%, var(--bg));
 	}
 
@@ -4587,6 +4770,59 @@
 		color: var(--muted);
 		font-size: 0.88rem;
 		line-height: 1.4;
+	}
+
+	.entry-author {
+		grid-column: 1 / -1;
+		display: flex;
+		gap: 18px;
+		align-items: center;
+		justify-content: space-between;
+		border-top: 1px solid var(--line);
+		padding-top: 16px;
+	}
+
+	.entry-author p {
+		margin: 0;
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+
+	.entry-author strong {
+		color: var(--ink);
+	}
+
+	.entry-author-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: flex-end;
+	}
+
+	.entry-author-links a {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		min-height: 32px;
+		border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
+		border-radius: 999px;
+		padding: 0 12px;
+		color: var(--muted);
+		font-size: 0.9rem;
+		font-weight: 850;
+		text-decoration: none;
+		background: color-mix(in srgb, var(--paper) 34%, transparent);
+	}
+
+	.entry-author-brand-icon {
+		width: 16px;
+		height: 16px;
+		fill: currentColor;
+	}
+
+	.entry-author-links a:hover {
+		border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
+		color: var(--accent);
 	}
 
 	.sidebar-backdrop,
@@ -4896,6 +5132,13 @@
 		background: color-mix(in srgb, var(--surface-strong) 70%, transparent);
 	}
 
+	.tabs button {
+		min-height: 34px;
+		padding: 0 12px;
+		font-size: 0.9rem;
+		font-weight: 900;
+	}
+
 	.mode-switch button {
 		display: inline-flex;
 		gap: 8px;
@@ -5005,18 +5248,17 @@
 	}
 
 	.artifact-title {
-		gap: 12px;
+		gap: 10px;
 	}
 
 	.artifact-icon {
-		display: grid;
-		place-items: center;
-		width: 42px;
-		height: 42px;
-		border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-		border-radius: 10px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 22px;
+		min-width: 22px;
+		height: 22px;
 		color: var(--accent-2);
-		background: color-mix(in srgb, var(--accent) 10%, transparent);
 	}
 
 	.artifact-title strong {
@@ -5391,12 +5633,24 @@
 		grid-template-columns: 22px minmax(0, 1fr);
 		gap: 10px;
 		align-items: start;
-		min-height: 78px;
+		height: 92px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		padding: 12px;
 		background: color-mix(in srgb, var(--surface) 68%, transparent);
 		text-align: left;
+		overflow: hidden;
+	}
+
+	.setup-area-list button:hover,
+	.event-card:hover,
+	.document-row:hover,
+	.judgment-step:hover,
+	.journal-card:hover,
+	.bridge-item:hover,
+	.request-list button:hover {
+		border-color: color-mix(in srgb, var(--accent) 46%, var(--line));
+		background: color-mix(in srgb, var(--accent) 7%, var(--surface));
 	}
 
 	.setup-area-list button.active {
@@ -5414,14 +5668,23 @@
 		margin-bottom: 4px;
 		font-size: 0.9rem;
 		line-height: 1.25;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.setup-area-list small {
+		display: -webkit-box;
+		overflow: hidden;
 		color: var(--muted);
 		font-size: 0.72rem;
 		font-weight: 900;
 		text-transform: uppercase;
 		letter-spacing: 0.08em;
+		line-height: 1.25;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	.setup-area-detail {
@@ -5443,8 +5706,8 @@
 	.setup-area-detail h3 {
 		margin: 6px 0 10px;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.8rem, 3vw, 3rem);
-		line-height: 1;
+		font-size: clamp(1.45rem, 2.4vw, 2.35rem);
+		line-height: 1.06;
 	}
 
 	.setup-area-detail p {
@@ -5580,7 +5843,8 @@
 	.workpaper-table,
 	.statement-binder,
 	.journal-entry {
-		overflow: hidden;
+		overflow-x: auto;
+		overflow-y: hidden;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: color-mix(in srgb, var(--surface) 72%, transparent);
@@ -5664,8 +5928,8 @@
 	.decision-panel h3 {
 		margin: 6px 0 12px;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.45rem, 2.1vw, 2.3rem);
-		line-height: 1.02;
+		font-size: clamp(1.25rem, 1.75vw, 1.85rem);
+		line-height: 1.08;
 	}
 
 	.event-docket p,
@@ -5763,8 +6027,14 @@
 
 	.choice-stack button {
 		border-radius: 8px;
-		padding: 11px 12px;
+		padding: 12px 14px;
 		text-align: left;
+	}
+
+	.choice-stack + p,
+	.decision-panel > p {
+		margin-top: 12px;
+		line-height: 1.45;
 	}
 
 	.decision-outcome {
@@ -5799,8 +6069,17 @@
 
 	.checklist span {
 		display: flex;
-		gap: 8px;
-		align-items: center;
+		gap: 10px;
+		align-items: flex-start;
+		font-size: 0.95rem;
+		line-height: 1.35;
+	}
+
+	.packet-summary h3 {
+		margin: 0 0 12px;
+		font-family: inherit;
+		font-size: 1.05rem;
+		line-height: 1.2;
 	}
 
 	.evidence-packet {
@@ -5830,8 +6109,9 @@
 	}
 
 	.primary-action {
-		min-height: 42px;
-		padding: 0 16px;
+		width: fit-content;
+		min-height: 38px;
+		padding: 0 14px;
 		background: var(--gold);
 		color: #14110a;
 		font-weight: 900;
@@ -6101,10 +6381,15 @@
 	.journal-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: 12px;
+		align-items: center;
 	}
 
 	.journal-actions button {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
 		min-height: 38px;
 		padding: 0 14px;
 		font-weight: 900;
@@ -6210,19 +6495,24 @@
 
 	.statement-title {
 		border-bottom: 1px solid var(--line);
-		padding: 18px;
+		padding: 22px 18px 18px;
 		text-align: center;
 	}
 
 	.statement-title h3 {
 		margin: 4px 0 0;
 		font-family: Georgia, 'Times New Roman', serif;
-		font-size: clamp(1.6rem, 3vw, 2.8rem);
-		line-height: 1;
+		font-size: clamp(1.55rem, 2.65vw, 2.45rem);
+		line-height: 1.04;
 	}
 
 	.statement-table {
 		padding: 8px 18px 18px;
+	}
+
+	.statement-binder > .tabs {
+		margin-bottom: 0;
+		padding: 12px 14px 0;
 	}
 
 	.statement-head,
@@ -6232,6 +6522,38 @@
 		gap: 12px;
 		align-items: center;
 		width: 100%;
+	}
+
+	.tie-out-table table {
+		min-width: 0;
+		table-layout: fixed;
+	}
+
+	.tie-out-table th:nth-child(1),
+	.tie-out-table td:nth-child(1) {
+		width: 19%;
+	}
+
+	.tie-out-table th:nth-child(2),
+	.tie-out-table td:nth-child(2),
+	.tie-out-table th:nth-child(3),
+	.tie-out-table td:nth-child(3),
+	.tie-out-table th:nth-child(4),
+	.tie-out-table td:nth-child(4) {
+		width: 11%;
+	}
+
+	.tie-out-table th:nth-child(5),
+	.tie-out-table td:nth-child(5) {
+		width: 36%;
+		font-size: 0.76rem;
+		line-height: 1.32;
+		word-break: break-word;
+	}
+
+	.tie-out-table th:nth-child(6),
+	.tie-out-table td:nth-child(6) {
+		width: 12%;
 	}
 
 	.statement-head {
@@ -6287,13 +6609,18 @@
 
 	.status-pill {
 		display: inline-flex;
-		width: max-content;
+		width: fit-content;
+		max-width: 100%;
 		min-height: 24px;
+		align-items: center;
+		justify-content: center;
 		border-radius: 999px;
 		padding: 3px 9px;
 		font-size: 0.72rem;
 		font-weight: 900;
-		white-space: nowrap;
+		line-height: 1.15;
+		text-align: center;
+		white-space: normal;
 	}
 
 	.status-pill.good {
@@ -6416,6 +6743,11 @@
 			max-width: min(620px, 74vw);
 		}
 
+		.entry-hero-brand h1 {
+			max-width: 12ch;
+			font-size: clamp(3.5rem, 8.5vw, 6rem);
+		}
+
 		.entry-ledger-sheet,
 		.entry-close-board,
 		.entry-filing-card {
@@ -6428,6 +6760,15 @@
 
 		.entry-preview {
 			grid-template-columns: 1fr;
+		}
+
+		.entry-author {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.entry-author-links {
+			justify-content: flex-start;
 		}
 
 		.landing-dossier {
@@ -6475,10 +6816,19 @@
 			max-width: none;
 		}
 
-		.entry-hero-content h1 {
-			max-width: 13ch;
-			font-size: clamp(2.35rem, 12vw, 3.2rem);
-			line-height: 1;
+		.entry-hero-brand {
+			gap: 12px;
+		}
+
+		.entry-hero-mark {
+			width: 48px;
+			height: 48px;
+		}
+
+		.entry-hero-brand h1 {
+			max-width: 10ch;
+			font-size: clamp(3rem, 15vw, 4.15rem);
+			line-height: 0.9;
 		}
 
 		.entry-hero-content p {
@@ -6492,7 +6842,11 @@
 
 		.entry-hero-overlay {
 			background:
-				linear-gradient(0deg, color-mix(in srgb, var(--bg) 92%, transparent) 0 46%, transparent 100%),
+				linear-gradient(
+					0deg,
+					color-mix(in srgb, var(--bg) 92%, transparent) 0 46%,
+					transparent 100%
+				),
 				linear-gradient(90deg, color-mix(in srgb, var(--bg) 74%, transparent), transparent 84%);
 		}
 
@@ -6520,6 +6874,16 @@
 			border-left: 0;
 			border-top: 1px solid var(--line);
 			padding: 12px 0 0;
+		}
+
+		.entry-author-links {
+			gap: 8px;
+		}
+
+		.entry-author-links a {
+			min-height: 30px;
+			padding: 0 10px;
+			font-size: 0.84rem;
 		}
 
 		.lesson-panel,
