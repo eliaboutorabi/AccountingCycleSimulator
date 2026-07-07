@@ -43,6 +43,13 @@
 		detail: string;
 	};
 
+	type ArtifactTable = {
+		title: string;
+		caption: string;
+		columns: string[];
+		rows: Record<string, string>[];
+	};
+
 	type Stage = {
 		id: string;
 		label: string;
@@ -81,6 +88,996 @@
 		{ label: 'Report', firstStage: 'report-overview' },
 		{ label: 'Assure', firstStage: 'assure-overview' }
 	];
+
+	const artifactTablesByStage: Partial<Record<string, ArtifactTable[]>> = {
+		'accounting-equation': [
+			{
+				title: 'Aster Labs upfront billing',
+				caption:
+					'The same event creates a resource and a claim. It does not create earned revenue yet.',
+				columns: ['Element', 'Account', 'Change', 'Why'],
+				rows: [
+					{
+						Element: 'Resource',
+						Account: 'Accounts receivable',
+						Change: '+$12,000',
+						Why: 'Nimbus has a claim against the customer'
+					},
+					{
+						Element: 'Claim',
+						Account: 'Deferred revenue',
+						Change: '+$12,000',
+						Why: 'Aster has a claim on future service'
+					},
+					{
+						Element: 'Equity',
+						Account: 'Retained earnings',
+						Change: '$0',
+						Why: 'No service has been earned yet'
+					}
+				]
+			}
+		],
+		'account-types': [
+			{
+				title: 'Account family map',
+				caption:
+					'The right family tells the learner where the account lives and how it normally behaves.',
+				columns: ['Account', 'Family', 'Normal balance', 'Statement home'],
+				rows: [
+					{
+						Account: 'Cash',
+						Family: 'Asset',
+						'Normal balance': 'Debit',
+						'Statement home': 'Balance sheet'
+					},
+					{
+						Account: 'Accounts receivable',
+						Family: 'Asset',
+						'Normal balance': 'Debit',
+						'Statement home': 'Balance sheet'
+					},
+					{
+						Account: 'Deferred revenue',
+						Family: 'Liability',
+						'Normal balance': 'Credit',
+						'Statement home': 'Balance sheet'
+					},
+					{
+						Account: 'Service revenue',
+						Family: 'Revenue',
+						'Normal balance': 'Credit',
+						'Statement home': 'Income statement'
+					}
+				]
+			}
+		],
+		'cash-vs-accrual': [
+			{
+				title: 'Cash basis vs accrual basis',
+				caption:
+					'Cash movement is evidence. Accrual accounting decides when the economic activity is earned.',
+				columns: ['Event', 'Cash view', 'Accrual view', 'January result'],
+				rows: [
+					{
+						Event: '$12,000 collected',
+						'Cash view': 'Cash received now',
+						'Accrual view': 'Liability until service is provided',
+						'January result': '$1,000 revenue'
+					},
+					{
+						Event: 'Jan service delivered',
+						'Cash view': 'No new cash',
+						'Accrual view': 'One month earned',
+						'January result': '$11,000 deferred'
+					}
+				]
+			}
+		],
+		'foundation-overview': [
+			{
+				title: 'Foundation packet',
+				caption:
+					'Before recording, the team needs structure, source evidence, and policy judgment.',
+				columns: ['Artifact', 'Owner', 'Purpose', 'Status'],
+				rows: [
+					{
+						Artifact: 'Chart of accounts',
+						Owner: 'Controller',
+						Purpose: 'Classify AR, deferred revenue, service revenue',
+						Status: 'Configured'
+					},
+					{
+						Artifact: 'Contract C-1001',
+						Owner: 'Revenue accountant',
+						Purpose: 'Identify obligation and service period',
+						Status: 'Captured'
+					},
+					{
+						Artifact: 'Policy memo POL-REV-606',
+						Owner: 'Accounting policy',
+						Purpose: 'Support over-time recognition',
+						Status: 'Linked'
+					}
+				]
+			}
+		],
+		setup: [
+			{
+				title: 'System blueprint',
+				caption: 'Setup should look like a controlled accounting system, not a generic checklist.',
+				columns: ['Area', 'Configuration', 'Downstream use', 'Control'],
+				rows: [
+					{
+						Area: 'Accounts',
+						Configuration: '1200 AR, 2300/2310 deferred revenue, 4100 service revenue',
+						'Downstream use': 'Journal, GL, statements',
+						Control: 'Controller approval'
+					},
+					{
+						Area: 'Customer master',
+						Configuration: 'Aster Labs, contract C-1001',
+						'Downstream use': 'AR aging and revenue schedule',
+						Control: 'Customer setup review'
+					},
+					{
+						Area: 'Policy',
+						Configuration: 'Recognize maintenance revenue over service term',
+						'Downstream use': 'Deferral and monthly release',
+						Control: 'Policy memo signoff'
+					}
+				]
+			}
+		],
+		events: [
+			{
+				title: 'Business event queue',
+				caption: 'The queue keeps accounting action separate from operational noise.',
+				columns: ['Date', 'Event', 'Evidence', 'Accounting response'],
+				rows: [
+					{
+						Date: 'Jan 02',
+						Event: 'Aster invoice issued',
+						Evidence: 'INV-1001 / C-1001',
+						'Accounting response': 'Record now'
+					},
+					{
+						Date: 'Jan 08',
+						Event: 'Aster cash received',
+						Evidence: 'PMT-1001 / BNK-8842',
+						'Accounting response': 'Apply cash'
+					},
+					{
+						Date: 'Jan 31',
+						Event: 'January service complete',
+						Evidence: 'RS-C-1001',
+						'Accounting response': 'Recognize over time'
+					}
+				]
+			}
+		],
+		evidence: [
+			{
+				title: 'Evidence packet',
+				caption: 'A realistic packet shows what field came from which document.',
+				columns: ['Document', 'Field extracted', 'Supports', 'Status'],
+				rows: [
+					{
+						Document: 'C-1001',
+						'Field extracted': '12-month maintenance term',
+						Supports: 'Recognition pattern',
+						Status: 'Complete'
+					},
+					{
+						Document: 'INV-1001',
+						'Field extracted': '$12,000 billing',
+						Supports: 'AR and deferred revenue',
+						Status: 'Complete'
+					},
+					{
+						Document: 'BNK-8842',
+						'Field extracted': '$12,000 receipt',
+						Supports: 'Cash application',
+						Status: 'Matched'
+					},
+					{
+						Document: 'POL-REV-606',
+						'Field extracted': 'Over-time service policy',
+						Supports: 'Judgment memo',
+						Status: 'Linked'
+					}
+				]
+			}
+		],
+		judgment: [
+			{
+				title: 'Revenue policy decision',
+				caption: 'The judgment should be visible before the journal entry appears.',
+				columns: ['Question', 'Conclusion', 'Evidence', 'Accounting effect'],
+				rows: [
+					{
+						Question: 'Is there a contract?',
+						Conclusion: 'Yes',
+						Evidence: 'C-1001 signed',
+						'Accounting effect': 'Contract exists'
+					},
+					{
+						Question: 'What is promised?',
+						Conclusion: 'Maintenance service',
+						Evidence: 'Service agreement',
+						'Accounting effect': 'Performance obligation'
+					},
+					{
+						Question: 'How is it earned?',
+						Conclusion: 'Evenly over 12 months',
+						Evidence: 'POL-REV-606',
+						'Accounting effect': '$1,000 January release'
+					}
+				]
+			}
+		],
+		'record-overview': [
+			{
+				title: 'Recording flow',
+				caption: 'Evidence becomes books through a small number of durable accounting objects.',
+				columns: ['Object', 'What it stores', 'Aster reference', 'Feeds'],
+				rows: [
+					{
+						Object: 'Subledger',
+						'What it stores': 'Customer invoice and revenue schedule',
+						'Aster reference': 'INV-1001 / RS-C-1001',
+						Feeds: 'Journal and reconciliation'
+					},
+					{
+						Object: 'Journal',
+						'What it stores': 'Debit and credit translation',
+						'Aster reference': 'JE-1003 / JE-1004 / JE-1005',
+						Feeds: 'General ledger'
+					},
+					{
+						Object: 'General ledger',
+						'What it stores': 'Posted activity by account',
+						'Aster reference': 'GL 1200 / 2300 / 4100',
+						Feeds: 'Trial balance'
+					}
+				]
+			}
+		],
+		subledger: [
+			{
+				title: 'Revenue schedule RS-C-1001',
+				caption: 'This is the practical version of accrual timing for the Aster contract.',
+				columns: ['Month', 'Billings', 'Revenue recognized', 'Deferred ending', 'Status'],
+				rows: [
+					{
+						Month: 'Jan',
+						Billings: '$12,000',
+						'Revenue recognized': '$1,000',
+						'Deferred ending': '$11,000',
+						Status: 'Released'
+					},
+					{
+						Month: 'Feb',
+						Billings: '$0',
+						'Revenue recognized': '$1,000',
+						'Deferred ending': '$10,000',
+						Status: 'Scheduled'
+					},
+					{
+						Month: 'Mar',
+						Billings: '$0',
+						'Revenue recognized': '$1,000',
+						'Deferred ending': '$9,000',
+						Status: 'Scheduled'
+					},
+					{
+						Month: 'Apr-Dec',
+						Billings: '$0',
+						'Revenue recognized': '$9,000',
+						'Deferred ending': '$0',
+						Status: 'Scheduled'
+					}
+				]
+			},
+			{
+				title: 'AR aging snapshot',
+				caption: 'The customer detail supports the AR control account.',
+				columns: ['Customer', 'Invoice', 'Current', 'Past due', 'Status'],
+				rows: [
+					{
+						Customer: 'Aster Labs',
+						Invoice: 'INV-1001',
+						Current: '$0',
+						'Past due': '$0',
+						Status: 'Paid'
+					},
+					{
+						Customer: 'West Harbor Co.',
+						Invoice: 'INV-143',
+						Current: '$420',
+						'Past due': '$0',
+						Status: 'Open'
+					},
+					{
+						Customer: 'Cedar Clinic',
+						Invoice: 'INV-097',
+						Current: '$0',
+						'Past due': '$110',
+						Status: 'Reserve review'
+					}
+				]
+			}
+		],
+		journal: [
+			{
+				title: 'JE-1005 - Release January service revenue',
+				caption:
+					'The journal entry should look like an entry, with debits, credits, source, and control.',
+				columns: ['Date', 'Account', 'Debit', 'Credit', 'Source'],
+				rows: [
+					{
+						Date: 'Jan 31',
+						Account: 'Deferred revenue',
+						Debit: '$1,000',
+						Credit: '-',
+						Source: 'RS-C-1001'
+					},
+					{
+						Date: 'Jan 31',
+						Account: 'Service revenue',
+						Debit: '-',
+						Credit: '$1,000',
+						Source: 'WP-REV'
+					},
+					{
+						Date: 'Total',
+						Account: 'Balanced entry',
+						Debit: '$1,000',
+						Credit: '$1,000',
+						Source: 'Reviewed'
+					}
+				]
+			},
+			{
+				title: 'Aster posting set',
+				caption:
+					'The learner sees the invoice, cash, and monthly release as separate accounting events.',
+				columns: ['Entry', 'Purpose', 'Debit', 'Credit'],
+				rows: [
+					{
+						Entry: 'JE-1003',
+						Purpose: 'Record invoice',
+						Debit: 'AR $12,000',
+						Credit: 'Deferred revenue $12,000'
+					},
+					{
+						Entry: 'JE-1004',
+						Purpose: 'Apply cash',
+						Debit: 'Cash $12,000',
+						Credit: 'AR $12,000'
+					},
+					{
+						Entry: 'JE-1005',
+						Purpose: 'Release January revenue',
+						Debit: 'Deferred revenue $1,000',
+						Credit: 'Service revenue $1,000'
+					}
+				]
+			}
+		],
+		matching: [
+			{
+				title: 'Cash application and match',
+				caption:
+					'Matching connects bank activity to customer detail instead of treating cash as revenue.',
+				columns: ['Document', 'Amount', 'Matched to', 'Status'],
+				rows: [
+					{
+						Document: 'INV-1001',
+						Amount: '$12,000',
+						'Matched to': 'Aster Labs AR',
+						Status: 'Invoice issued'
+					},
+					{
+						Document: 'PMT-1001',
+						Amount: '$12,000',
+						'Matched to': 'INV-1001',
+						Status: 'Remittance received'
+					},
+					{
+						Document: 'BNK-8842',
+						Amount: '$12,000',
+						'Matched to': 'PMT-1001',
+						Status: 'Bank line cleared'
+					}
+				]
+			}
+		],
+		ledger: [
+			{
+				title: 'Deferred revenue GL 2300',
+				caption: 'The GL shows the running account memory after approved journals post.',
+				columns: ['Date', 'Source', 'Description', 'Debit', 'Credit', 'Balance'],
+				rows: [
+					{
+						Date: 'Jan 02',
+						Source: 'JE-1003',
+						Description: 'Aster annual invoice',
+						Debit: '-',
+						Credit: '$12,000',
+						Balance: '$12,000 Cr'
+					},
+					{
+						Date: 'Jan 31',
+						Source: 'JE-1005',
+						Description: 'January service release',
+						Debit: '$1,000',
+						Credit: '-',
+						Balance: '$11,000 Cr'
+					}
+				]
+			},
+			{
+				title: 'Service revenue GL 4100',
+				caption: 'The earned portion appears in revenue only after the release entry posts.',
+				columns: ['Date', 'Source', 'Description', 'Debit', 'Credit', 'Balance'],
+				rows: [
+					{
+						Date: 'Jan 31',
+						Source: 'JE-1005',
+						Description: 'January Aster service earned',
+						Debit: '-',
+						Credit: '$1,000',
+						Balance: '$1,000 Cr'
+					}
+				]
+			}
+		],
+		'close-overview': [
+			{
+				title: 'Close checklist',
+				caption: 'The close proves the period before the statements are drafted.',
+				columns: ['Close area', 'Question answered', 'Artifact', 'Status'],
+				rows: [
+					{
+						'Close area': 'Cutoff',
+						'Question answered': 'Did January include the right events?',
+						Artifact: 'CUT-04',
+						Status: 'Open review'
+					},
+					{
+						'Close area': 'Adjustments',
+						'Question answered': 'What timing entries are needed?',
+						Artifact: 'WP-REV / DEP-01',
+						Status: 'Prepared'
+					},
+					{
+						'Close area': 'Reconciliations',
+						'Question answered': 'Do balances tie to support?',
+						Artifact: 'REC-REV',
+						Status: 'Tied'
+					}
+				]
+			}
+		],
+		cutoff: [
+			{
+				title: 'Cutoff review',
+				caption: 'Near-period documents are sorted into January, February, or monitor.',
+				columns: ['Item', 'Document date', 'Accounting decision', 'Impact'],
+				rows: [
+					{
+						Item: 'RR-2211 inventory receipt',
+						'Document date': 'Jan 30',
+						'Accounting decision': 'Record January RNI',
+						Impact: 'Inventory and accrued expenses +$135'
+					},
+					{
+						Item: 'Vendor bill BILL-904',
+						'Document date': 'Feb 02',
+						'Accounting decision': 'Support January accrual',
+						Impact: 'No February expense'
+					},
+					{
+						Item: 'Aster service',
+						'Document date': 'Jan 31',
+						'Accounting decision': 'Release January revenue',
+						Impact: 'Revenue +$1,000'
+					}
+				]
+			}
+		],
+		adjustments: [
+			{
+				title: 'Adjusting entries workpaper',
+				caption: 'Adjustments are clearer when the calculation, support, and review are together.',
+				columns: ['Workpaper', 'Entry', 'Amount', 'Support', 'Review'],
+				rows: [
+					{
+						Workpaper: 'WP-REV',
+						Entry: 'Deferred revenue release',
+						Amount: '$1,000',
+						Support: 'RS-C-1001',
+						Review: 'Approved'
+					},
+					{
+						Workpaper: 'CUT-04',
+						Entry: 'RNI accrual',
+						Amount: '$135',
+						Support: 'RR-2211',
+						Review: 'Prepared'
+					},
+					{
+						Workpaper: 'DEP-01',
+						Entry: 'Depreciation',
+						Amount: '$72',
+						Support: 'PPE rollforward',
+						Review: 'Approved'
+					}
+				]
+			}
+		],
+		reconciliations: [
+			{
+				title: 'Reconciliation summary',
+				caption: 'The GL should be proven to independent or detailed support.',
+				columns: ['Account', 'GL balance', 'Support', 'Difference', 'Status'],
+				rows: [
+					{
+						Account: 'Cash',
+						'GL balance': '$1,820',
+						Support: 'Bank rec $1,820',
+						Difference: '$0',
+						Status: 'Tied'
+					},
+					{
+						Account: 'Accounts receivable',
+						'GL balance': '$1,005',
+						Support: 'AR aging $1,005',
+						Difference: '$0',
+						Status: 'Tied'
+					},
+					{
+						Account: 'Deferred revenue',
+						'GL balance': '$1,050',
+						Support: 'Revenue schedule $1,050',
+						Difference: '$0',
+						Status: 'Tied'
+					}
+				]
+			}
+		],
+		trial: [
+			{
+				title: 'Adjusted trial balance excerpt',
+				caption: 'The TB proves balance and also shows mapping readiness.',
+				columns: ['Account', 'Debit', 'Credit', 'Mapping', 'Review'],
+				rows: [
+					{
+						Account: '1010 Cash',
+						Debit: '$1,820',
+						Credit: '-',
+						Mapping: 'Cash',
+						Review: 'Tied'
+					},
+					{
+						Account: '1200 Accounts receivable',
+						Debit: '$1,005',
+						Credit: '-',
+						Mapping: 'AR, gross',
+						Review: 'Tied'
+					},
+					{
+						Account: '2300 Deferred revenue, current',
+						Debit: '-',
+						Credit: '$690',
+						Mapping: 'Contract liabilities',
+						Review: 'Schedule tied'
+					},
+					{
+						Account: '4100 Service revenue',
+						Debit: '-',
+						Credit: '$1,180',
+						Mapping: 'Service revenue',
+						Review: 'Revenue schedule'
+					},
+					{
+						Account: 'Total',
+						Debit: '$10,645',
+						Credit: '$10,645',
+						Mapping: 'Balanced',
+						Review: 'Ready'
+					}
+				]
+			}
+		],
+		consolidation: [
+			{
+				title: 'Consolidation worksheet',
+				caption: 'A group report removes internal activity before external reporting.',
+				columns: ['Entity / entry', 'Debit', 'Credit', 'Purpose'],
+				rows: [
+					{
+						'Entity / entry': 'Nimbus Bikes US TB import',
+						Debit: '$7.4m assets',
+						Credit: '$7.4m claims',
+						Purpose: 'Parent trial balance'
+					},
+					{
+						'Entity / entry': 'Nimbus Canada TB import',
+						Debit: '$0.6m assets',
+						Credit: '$0.6m claims',
+						Purpose: 'Subsidiary trial balance'
+					},
+					{
+						'Entity / entry': 'Eliminate IC sale',
+						Debit: 'Revenue $85',
+						Credit: 'COGS $85',
+						Purpose: 'Remove internal activity'
+					}
+				]
+			}
+		],
+		'report-overview': [
+			{
+				title: 'Reporting package',
+				caption: 'Reporting is not a prettier TB; it is a controlled communication package.',
+				columns: ['Artifact', 'Source', 'Purpose', 'Tie requirement'],
+				rows: [
+					{
+						Artifact: 'Statement mapping',
+						Source: 'Adjusted TB',
+						Purpose: 'Route accounts to lines',
+						'Tie requirement': 'Every active account mapped'
+					},
+					{
+						Artifact: 'Financial statements',
+						Source: 'Mapped balances',
+						Purpose: 'External communication',
+						'Tie requirement': 'Statements cross-foot'
+					},
+					{
+						Artifact: 'Disclosures',
+						Source: 'Schedules and policies',
+						Purpose: 'Explain statement lines',
+						'Tie requirement': 'Notes agree to statements'
+					}
+				]
+			}
+		],
+		mapping: [
+			{
+				title: 'Statement mapping matrix',
+				caption: 'Mapping errors create report errors even when the TB is balanced.',
+				columns: ['GL account', 'Statement', 'Line item', 'Support / note'],
+				rows: [
+					{
+						'GL account': '1010 Cash',
+						Statement: 'Balance sheet',
+						'Line item': 'Cash and cash equivalents',
+						'Support / note': 'Cash flow ending cash'
+					},
+					{
+						'GL account': '2300 / 2310 Deferred revenue',
+						Statement: 'Balance sheet',
+						'Line item': 'Contract liabilities',
+						'Support / note': 'Revenue note'
+					},
+					{
+						'GL account': '4100 Service revenue',
+						Statement: 'Income statement',
+						'Line item': 'Service revenue',
+						'Support / note': 'Revenue disaggregation'
+					}
+				]
+			}
+		],
+		statements: [
+			{
+				title: 'Condensed statements of operations',
+				caption: 'Statement views should look like statements, not summary cards.',
+				columns: ['Line item', 'Jan 2026', 'Dec 2025', 'Note'],
+				rows: [
+					{
+						'Line item': 'Product revenue',
+						'Jan 2026': '$1,420',
+						'Dec 2025': '$1,275',
+						Note: '2'
+					},
+					{
+						'Line item': 'Service revenue',
+						'Jan 2026': '$1,180',
+						'Dec 2025': '$1,010',
+						Note: '2'
+					},
+					{
+						'Line item': 'Net revenue',
+						'Jan 2026': '$2,600',
+						'Dec 2025': '$2,285',
+						Note: ''
+					},
+					{
+						'Line item': 'Gross profit',
+						'Jan 2026': '$1,372',
+						'Dec 2025': '$1,161',
+						Note: ''
+					},
+					{
+						'Line item': 'Net income',
+						'Jan 2026': '$411',
+						'Dec 2025': '$308',
+						Note: ''
+					}
+				]
+			},
+			{
+				title: 'Balance sheet excerpt',
+				caption: 'The deferred amount remains a liability after the January release.',
+				columns: ['Line item', 'Jan 2026', 'Dec 2025', 'Note'],
+				rows: [
+					{
+						'Line item': 'Cash and cash equivalents',
+						'Jan 2026': '$1,820',
+						'Dec 2025': '$1,658',
+						Note: 'CF'
+					},
+					{
+						'Line item': 'Accounts receivable, net',
+						'Jan 2026': '$964',
+						'Dec 2025': '$870',
+						Note: '3'
+					},
+					{
+						'Line item': 'Deferred revenue, current',
+						'Jan 2026': '$690',
+						'Dec 2025': '$575',
+						Note: '2'
+					},
+					{
+						'Line item': 'Total assets',
+						'Jan 2026': '$7,825',
+						'Dec 2025': '$7,263',
+						Note: ''
+					}
+				]
+			}
+		],
+		'cash-flow': [
+			{
+				title: 'Cash flow bridge',
+				caption: 'The bridge explains why net income and cash move differently.',
+				columns: ['Bridge item', 'Amount', 'Type', 'Explanation'],
+				rows: [
+					{
+						'Bridge item': 'Net income',
+						Amount: '$411',
+						Type: 'Start',
+						Explanation: 'Accrual-basis profit'
+					},
+					{
+						'Bridge item': 'Accounts receivable',
+						Amount: '($94)',
+						Type: 'Working capital',
+						Explanation: 'Revenue not yet collected'
+					},
+					{
+						'Bridge item': 'Deferred revenue',
+						Amount: '$130',
+						Type: 'Working capital',
+						Explanation: 'Cash received before earning'
+					},
+					{
+						'Bridge item': 'Net cash from operations',
+						Amount: '$562',
+						Type: 'Subtotal',
+						Explanation: 'Operating cash generated'
+					}
+				]
+			}
+		],
+		disclosures: [
+			{
+				title: 'Revenue disclosure table',
+				caption: 'Footnotes need tables that tie, not just narrative policy language.',
+				columns: ['Disclosure fact', 'Amount', 'Statement source', 'Status'],
+				rows: [
+					{
+						'Disclosure fact': 'Product revenue',
+						Amount: '$1,420',
+						'Statement source': 'Income statement',
+						Status: 'Tied'
+					},
+					{
+						'Disclosure fact': 'Service revenue',
+						Amount: '$1,180',
+						'Statement source': 'Income statement',
+						Status: 'Tied'
+					},
+					{
+						'Disclosure fact': 'Deferred revenue ending',
+						Amount: '$1,050',
+						'Statement source': 'Balance sheet',
+						Status: 'Tied'
+					}
+				]
+			}
+		],
+		'assure-overview': [
+			{
+				title: 'Assurance readiness',
+				caption: 'The package becomes credible when ties, controls, audit support, and tags agree.',
+				columns: ['Readiness area', 'Evidence', 'Blocker', 'Status'],
+				rows: [
+					{
+						'Readiness area': 'Tie-out',
+						Evidence: 'Statement-to-note binder',
+						Blocker: 'AR note tie',
+						Status: 'Review'
+					},
+					{
+						'Readiness area': 'Controls',
+						Evidence: 'Review signoffs',
+						Blocker: 'Manual JE approval comment',
+						Status: 'Open'
+					},
+					{
+						'Readiness area': 'Audit',
+						Evidence: 'PBC request board',
+						Blocker: 'JE-04 support',
+						Status: 'Open'
+					}
+				]
+			}
+		],
+		'tie-out': [
+			{
+				title: 'Tie-out binder',
+				caption: 'Repeated facts need to agree everywhere they appear.',
+				columns: ['Fact', 'Statement', 'Note', 'MD&A', 'XBRL tag', 'Status'],
+				rows: [
+					{
+						Fact: 'Service revenue',
+						Statement: '$1,180',
+						Note: '$1,180',
+						'MD&A': '$1,180',
+						'XBRL tag': 'RevenueFromContract',
+						Status: 'Tied'
+					},
+					{
+						Fact: 'Deferred revenue',
+						Statement: '$1,050',
+						Note: '$1,050',
+						'MD&A': '$1,050',
+						'XBRL tag': 'ContractLiability',
+						Status: 'Tied'
+					},
+					{
+						Fact: 'AR, net',
+						Statement: '$964',
+						Note: '$954',
+						'MD&A': '$964',
+						'XBRL tag': 'AccountsReceivableNet',
+						Status: 'Broken note tie'
+					}
+				]
+			}
+		],
+		controls: [
+			{
+				title: 'Management review controls',
+				caption: 'Control evidence makes certification more than a final click.',
+				columns: ['Control', 'Owner', 'Evidence', 'Status'],
+				rows: [
+					{
+						Control: 'Revenue schedule review',
+						Owner: 'Controller',
+						Evidence: 'WP-REV signoff',
+						Status: 'Effective'
+					},
+					{
+						Control: 'Manual JE approval',
+						Owner: 'Assistant controller',
+						Evidence: 'JE approval log',
+						Status: 'Comment open'
+					},
+					{
+						Control: 'Disclosure tie-out',
+						Owner: 'SEC reporting',
+						Evidence: 'Tie-out binder',
+						Status: 'In progress'
+					}
+				]
+			}
+		],
+		audit: [
+			{
+				title: 'Auditor request board',
+				caption:
+					'Audit support should connect back to source, schedule, journal, and review evidence.',
+				columns: ['Request', 'Evidence package', 'Assertion', 'Status'],
+				rows: [
+					{
+						Request: 'REV-01 service revenue sample',
+						'Evidence package': 'Contract, invoice, schedule, JE-1005',
+						Assertion: 'Occurrence / accuracy',
+						Status: 'Ready'
+					},
+					{
+						Request: 'DEF-02 deferred revenue rollforward',
+						'Evidence package': 'RS-C-1001 and GL 2300',
+						Assertion: 'Completeness',
+						Status: 'Ready'
+					},
+					{
+						Request: 'JE-04 manual reclass',
+						'Evidence package': 'Weak support',
+						Assertion: 'Classification',
+						Status: 'Open'
+					}
+				]
+			}
+		],
+		filing: [
+			{
+				title: 'Mock 10-Q package checklist',
+				caption: 'Filing readiness depends on content, controls, and structured data.',
+				columns: ['Section', 'Owner', 'Evidence', 'Status'],
+				rows: [
+					{
+						Section: 'Financial statements',
+						Owner: 'SEC reporting',
+						Evidence: 'Statement binder',
+						Status: 'Tied'
+					},
+					{
+						Section: 'Footnotes',
+						Owner: 'Accounting policy',
+						Evidence: 'Disclosure binder',
+						Status: 'Tied'
+					},
+					{
+						Section: 'Controls and procedures',
+						Owner: 'Controller',
+						Evidence: 'Review signoffs',
+						Status: 'Comment open'
+					},
+					{
+						Section: 'Inline XBRL facts',
+						Owner: 'SEC reporting',
+						Evidence: 'Tag list',
+						Status: '2 warnings'
+					}
+				]
+			}
+		],
+		debrief: [
+			{
+				title: 'Close improvement board',
+				caption: 'The cycle ends by preserving lessons for the next close.',
+				columns: ['Issue', 'Root cause', 'February action', 'Owner'],
+				rows: [
+					{
+						Issue: 'Late RNI review',
+						'Root cause': 'Vendor bills loaded after cutoff meeting',
+						'February action': 'Move receiving review two days earlier',
+						Owner: 'AP lead'
+					},
+					{
+						Issue: 'Revenue tie-out delay',
+						'Root cause': 'No named owner',
+						'February action': 'Assign revenue tie-out owner',
+						Owner: 'Controller'
+					},
+					{
+						Issue: 'Manual JE comment',
+						'Root cause': 'Weak support template',
+						'February action': 'Add required support fields',
+						Owner: 'Assistant controller'
+					}
+				]
+			}
+		]
+	};
 
 	const stages: Stage[] = [
 		{
@@ -1263,6 +2260,34 @@
 		return activeStage.choices;
 	});
 
+	const currentArtifactTables = $derived.by(() => {
+		return artifactTablesByStage[activeStage.id] ?? buildDefaultArtifactTables(activeStage);
+	});
+
+	function buildDefaultArtifactTables(stage: Stage): ArtifactTable[] {
+		return [
+			{
+				title: stage.artifact,
+				caption:
+					'This step keeps the same Nimbus case visible while the practical artifact changes.',
+				columns: ['Field', 'Value'],
+				rows: [
+					{ Field: 'Action', Value: stage.caseAction },
+					{ Field: 'Evidence', Value: stage.evidence },
+					{ Field: 'Expected result', Value: stage.result }
+				]
+			}
+		];
+	}
+
+	function tableRowKey(table: ArtifactTable, row: Record<string, string>) {
+		return `${table.title}-${Object.values(row).join('|')}`;
+	}
+
+	function cellValue(row: Record<string, string>, column: string) {
+		return row[column] ?? '';
+	}
+
 	function chooseStage(index: number) {
 		activeIndex = Math.max(0, Math.min(index, stages.length - 1));
 		selectedAnswer = null;
@@ -1273,6 +2298,11 @@
 		if (index >= 0) {
 			chooseStage(index);
 		}
+	}
+
+	function chooseStageFromSelect(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		chooseStage(Number(select.value));
 	}
 
 	function nextStage() {
@@ -1333,8 +2363,18 @@
 
 	<section class="progress-strip" aria-label="Accounting cycle progress">
 		<div class="progress-summary">
-			<span>Step {activeIndex + 1} of {stages.length}</span>
-			<strong>{activeStage.label}</strong>
+			<div>
+				<span>Step {activeIndex + 1} of {stages.length}</span>
+				<strong>{activeStage.label}</strong>
+			</div>
+			<label>
+				<span>Jump to</span>
+				<select value={activeIndex} onchange={chooseStageFromSelect}>
+					{#each stages as stage, index (stage.id)}
+						<option value={index}>{stage.group} - {stage.label}</option>
+					{/each}
+				</select>
+			</label>
 		</div>
 		<div class="progress-line" aria-hidden="true"></div>
 	</section>
@@ -1379,9 +2419,9 @@
 		<aside class="practice-pane" aria-label={`${activeStage.label} practical case`}>
 			<header class="case-header">
 				<div>
-					<span class="eyebrow">{activeStage.artifact}</span>
-					<h2>{nimbusScenario.company}</h2>
-					<p>{nimbusScenario.period}</p>
+					<span class="eyebrow">{activeStage.group} / {nimbusScenario.period}</span>
+					<h2>{activeStage.artifact}</h2>
+					<p>{activeStage.caseAction}</p>
 				</div>
 				<span class="artifact-icon"><ActiveIcon size={22} strokeWidth={2.4} /></span>
 			</header>
@@ -1392,28 +2432,57 @@
 					src={asset('/images/accounting-cycle-hero-light.png')}
 					alt="Accounting source documents, journal entries, statements, and filing materials connected in one trail"
 				/>
+
+				<div class="case-facts" aria-label="Nimbus case facts">
+					{#each caseFacts as fact (fact.label)}
+						<div>
+							<span>{fact.label}</span>
+							<strong>{fact.value}</strong>
+						</div>
+					{/each}
+				</div>
 			{/if}
 
-			<div class="case-facts" aria-label="Nimbus case facts">
-				{#each caseFacts as fact (fact.label)}
-					<div>
-						<span>{fact.label}</span>
-						<strong>{fact.value}</strong>
-					</div>
+			<div class="artifact-deck" aria-label={`${activeStage.label} accounting artifact`}>
+				{#each currentArtifactTables as table (table.title)}
+					<section class="artifact-table-card">
+						<header>
+							<small>{activeStage.label}</small>
+							<h3>{table.title}</h3>
+							<p>{table.caption}</p>
+						</header>
+
+						<div class="artifact-table-scroll">
+							<table>
+								<thead>
+									<tr>
+										{#each table.columns as column (column)}
+											<th>{column}</th>
+										{/each}
+									</tr>
+								</thead>
+								<tbody>
+									{#each table.rows as row (tableRowKey(table, row))}
+										<tr>
+											{#each table.columns as column (column)}
+												<td>{cellValue(row, column)}</td>
+											{/each}
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					</section>
 				{/each}
 			</div>
 
-			<section class="artifact-work">
+			<section class="artifact-work" aria-label="Artifact support">
 				<div class="artifact-row">
-					<span>Do this</span>
-					<strong>{activeStage.caseAction}</strong>
-				</div>
-				<div class="artifact-row">
-					<span>Evidence</span>
+					<span>Primary evidence</span>
 					<strong>{activeStage.evidence}</strong>
 				</div>
 				<div class="artifact-row">
-					<span>Result</span>
+					<span>Accounting result</span>
 					<strong>{activeStage.result}</strong>
 				</div>
 			</section>
@@ -1636,8 +2705,31 @@
 		font-weight: 760;
 	}
 
+	.progress-summary div,
+	.progress-summary label {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
 	.progress-summary strong {
 		color: var(--ink);
+	}
+
+	.progress-summary label span {
+		color: var(--muted);
+	}
+
+	.progress-summary select {
+		max-width: min(420px, 50vw);
+		min-height: 38px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #ffffff;
+		color: var(--ink);
+		font: inherit;
+		font-weight: 750;
+		padding: 0 34px 0 12px;
 	}
 
 	.progress-line {
@@ -1649,7 +2741,7 @@
 
 	.workspace {
 		display: grid;
-		grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.75fr);
+		grid-template-columns: minmax(340px, 0.82fr) minmax(560px, 1.18fr);
 		gap: 18px;
 		align-items: start;
 	}
@@ -1663,8 +2755,7 @@
 	}
 
 	.lesson-pane {
-		padding: clamp(24px, 4vw, 54px);
-		min-height: 690px;
+		padding: clamp(22px, 3vw, 40px);
 	}
 
 	.stage-meta {
@@ -1694,8 +2785,8 @@
 
 	h1 {
 		max-width: 850px;
-		font-size: clamp(2.5rem, 5.4vw, 5.8rem);
-		line-height: 0.96;
+		font-size: clamp(2.35rem, 4vw, 4.5rem);
+		line-height: 1;
 		letter-spacing: 0;
 	}
 
@@ -1724,6 +2815,7 @@
 
 	.reading-block h2,
 	.two-notes h2,
+	.artifact-table-card h3,
 	.choice-panel h3,
 	.trace-card h3 {
 		display: flex;
@@ -1769,6 +2861,7 @@
 
 	.two-notes div,
 	.key-point,
+	.artifact-table-card,
 	.artifact-work,
 	.choice-panel,
 	.trace-card {
@@ -1857,7 +2950,7 @@
 	.case-image {
 		display: block;
 		width: 100%;
-		aspect-ratio: 16 / 8;
+		aspect-ratio: 16 / 6.5;
 		object-fit: cover;
 		border: 1px solid var(--line);
 		border-radius: 8px;
@@ -1896,7 +2989,8 @@
 
 	.artifact-work {
 		display: grid;
-		gap: 1px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0;
 		padding: 0;
 		overflow: hidden;
 	}
@@ -1910,6 +3004,81 @@
 
 	.artifact-row strong {
 		line-height: 1.42;
+	}
+
+	.artifact-deck {
+		display: grid;
+		gap: 12px;
+	}
+
+	.artifact-table-card {
+		overflow: hidden;
+		background: #ffffff;
+	}
+
+	.artifact-table-card header {
+		display: grid;
+		gap: 5px;
+		padding: 14px 14px 10px;
+		border-bottom: 1px solid var(--line);
+		background: linear-gradient(180deg, #ffffff, #f7f9fb);
+	}
+
+	.artifact-table-card small {
+		color: var(--teal);
+		font-size: 0.76rem;
+		font-weight: 820;
+		letter-spacing: 0;
+	}
+
+	.artifact-table-card h3 {
+		font-size: 1.02rem;
+	}
+
+	.artifact-table-card p {
+		color: var(--muted);
+		font-size: 0.88rem;
+		line-height: 1.42;
+	}
+
+	.artifact-table-scroll {
+		overflow-x: auto;
+	}
+
+	.artifact-table-card table {
+		width: 100%;
+		min-width: 640px;
+		border-collapse: collapse;
+	}
+
+	.artifact-table-card th,
+	.artifact-table-card td {
+		padding: 10px 12px;
+		border-bottom: 1px solid var(--line);
+		text-align: left;
+		vertical-align: top;
+	}
+
+	.artifact-table-card th {
+		color: var(--muted);
+		font-size: 0.72rem;
+		font-weight: 850;
+		letter-spacing: 0;
+		background: #fbfcfd;
+	}
+
+	.artifact-table-card td {
+		color: #252b33;
+		font-size: 0.88rem;
+		line-height: 1.35;
+	}
+
+	.artifact-table-card tbody tr:last-child td {
+		border-bottom: 0;
+	}
+
+	.artifact-table-card tbody tr:nth-child(even) td {
+		background: #fbfcfd;
 	}
 
 	.choice-panel,
@@ -2088,6 +3257,18 @@
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
+		.progress-summary,
+		.progress-summary div,
+		.progress-summary label {
+			display: grid;
+			justify-items: start;
+		}
+
+		.progress-summary select {
+			max-width: 100%;
+			width: 100%;
+		}
+
 		.workspace {
 			gap: 12px;
 		}
@@ -2103,6 +3284,7 @@
 
 		.stage-meta,
 		.two-notes,
+		.artifact-work,
 		.case-facts,
 		.sequence-bar {
 			grid-template-columns: 1fr;
