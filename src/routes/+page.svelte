@@ -2231,6 +2231,7 @@
 	const ActiveIcon = $derived(activeStage.icon);
 	const progressPercent = $derived(((activeIndex + 1) / stages.length) * 100);
 	const selectedIsCorrect = $derived(selectedAnswer === activeStage.correctChoice);
+	const activeTraceNode = $derived(nimbusScenario.traceNodes[traceIndex]);
 
 	const currentChoices = $derived.by(() => {
 		if (activeStage.id === 'accounting-equation') {
@@ -2326,6 +2327,10 @@
 
 	function resetCurrentAnswer() {
 		selectedAnswer = null;
+	}
+
+	function chooseTrace(index: number) {
+		traceIndex = Math.max(0, Math.min(index, nimbusScenario.traceNodes.length - 1));
 	}
 </script>
 
@@ -2426,22 +2431,16 @@
 				<span class="artifact-icon"><ActiveIcon size={22} strokeWidth={2.4} /></span>
 			</header>
 
-			{#if activeStage.id === 'home'}
-				<img
-					class="case-image"
-					src={asset('/images/accounting-cycle-hero-light.png')}
-					alt="Accounting source documents, journal entries, statements, and filing materials connected in one trail"
-				/>
-
-				<div class="case-facts" aria-label="Nimbus case facts">
-					{#each caseFacts as fact (fact.label)}
-						<div>
-							<span>{fact.label}</span>
-							<strong>{fact.value}</strong>
-						</div>
-					{/each}
+			<section class="artifact-work" aria-label="Artifact support">
+				<div class="artifact-row">
+					<span>Primary evidence</span>
+					<strong>{activeStage.evidence}</strong>
 				</div>
-			{/if}
+				<div class="artifact-row">
+					<span>Accounting result</span>
+					<strong>{activeStage.result}</strong>
+				</div>
+			</section>
 
 			<div class="artifact-deck" aria-label={`${activeStage.label} accounting artifact`}>
 				{#each currentArtifactTables as table (table.title)}
@@ -2475,17 +2474,6 @@
 					</section>
 				{/each}
 			</div>
-
-			<section class="artifact-work" aria-label="Artifact support">
-				<div class="artifact-row">
-					<span>Primary evidence</span>
-					<strong>{activeStage.evidence}</strong>
-				</div>
-				<div class="artifact-row">
-					<span>Accounting result</span>
-					<strong>{activeStage.result}</strong>
-				</div>
-			</section>
 
 			<section class="choice-panel" aria-labelledby="choice-title">
 				<div class="choice-header">
@@ -2527,35 +2515,49 @@
 				{/if}
 			</section>
 
-			<section class="trace-card" aria-labelledby="trace-title">
+			{#if activeStage.id === 'home'}
+				<section class="case-context" aria-label="Nimbus case file">
+					<img
+						class="case-image"
+						src={asset('/images/accounting-cycle-hero-light.png')}
+						alt="Accounting source documents, journal entries, statements, and filing materials connected in one trail"
+					/>
+
+					<div class="case-facts" aria-label="Nimbus case facts">
+						{#each caseFacts as fact (fact.label)}
+							<div>
+								<span>{fact.label}</span>
+								<strong>{fact.value}</strong>
+							</div>
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<section class="trace-rail" aria-labelledby="trace-title">
 				<div class="trace-heading">
-					<h3 id="trace-title"><GitBranch size={16} strokeWidth={2.4} /> Trace the same number</h3>
+					<h3 id="trace-title"><GitBranch size={16} strokeWidth={2.4} /> Number trail</h3>
 					<span>{traceIndex + 1} / {nimbusScenario.traceNodes.length}</span>
 				</div>
 
-				<div class="trace-controls">
-					<button
-						type="button"
-						aria-label="Previous trace point"
-						disabled={traceIndex === 0}
-						onclick={() => (traceIndex -= 1)}
-					>
-						<ArrowLeft size={15} strokeWidth={2.4} />
-					</button>
-					<button
-						type="button"
-						aria-label="Next trace point"
-						disabled={traceIndex === nimbusScenario.traceNodes.length - 1}
-						onclick={() => (traceIndex += 1)}
-					>
-						<ArrowRight size={15} strokeWidth={2.4} />
-					</button>
+				<div class="trace-steps" aria-label="Trace points">
+					{#each nimbusScenario.traceNodes as node, index (node.label)}
+						<button
+							type="button"
+							class={{ active: traceIndex === index }}
+							aria-current={traceIndex === index ? 'step' : undefined}
+							onclick={() => chooseTrace(index)}
+						>
+							<span>{index + 1}</span>
+							<strong>{node.label}</strong>
+						</button>
+					{/each}
 				</div>
 
 				<div class="trace-detail">
-					<strong>{nimbusScenario.traceNodes[traceIndex].label}</strong>
-					<span>{nimbusScenario.traceNodes[traceIndex].value}</span>
-					<p>{nimbusScenario.traceNodes[traceIndex].detail}</p>
+					<strong>{activeTraceNode.value}</strong>
+					<span>{activeTraceNode.label}</span>
+					<p>{activeTraceNode.detail}</p>
 				</div>
 			</section>
 		</aside>
@@ -2665,8 +2667,7 @@
 
 	.chapter-nav button,
 	.sequence-bar button,
-	.choice-header button,
-	.trace-controls button {
+	.choice-header button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -2741,13 +2742,14 @@
 
 	.workspace {
 		display: grid;
-		grid-template-columns: minmax(340px, 0.82fr) minmax(560px, 1.18fr);
+		grid-template-columns: minmax(330px, 0.78fr) minmax(600px, 1.22fr);
 		gap: 18px;
 		align-items: start;
 	}
 
 	.lesson-pane,
 	.practice-pane {
+		min-width: 0;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: rgba(255, 255, 255, 0.96);
@@ -2755,7 +2757,7 @@
 	}
 
 	.lesson-pane {
-		padding: clamp(22px, 3vw, 40px);
+		padding: clamp(22px, 2.5vw, 34px);
 	}
 
 	.stage-meta {
@@ -2763,7 +2765,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		margin-bottom: 34px;
+		margin-bottom: 24px;
 		color: var(--muted);
 		font-size: 0.92rem;
 		font-weight: 760;
@@ -2785,39 +2787,39 @@
 
 	h1 {
 		max-width: 850px;
-		font-size: clamp(2.35rem, 4vw, 4.5rem);
-		line-height: 1;
+		font-size: clamp(2rem, 3.2vw, 3.6rem);
+		line-height: 1.04;
 		letter-spacing: 0;
 	}
 
 	.question {
 		max-width: 760px;
-		margin-top: 22px;
+		margin-top: 16px;
 		color: #21302f;
-		font-size: clamp(1.2rem, 2vw, 1.7rem);
+		font-size: clamp(1.08rem, 1.45vw, 1.34rem);
 		line-height: 1.35;
 		font-weight: 720;
 	}
 
 	.lesson-copy {
 		max-width: 820px;
-		margin-top: 22px;
+		margin-top: 16px;
 		color: var(--muted);
-		font-size: 1.1rem;
-		line-height: 1.75;
+		font-size: 1rem;
+		line-height: 1.62;
 	}
 
 	.reading-block,
 	.two-notes,
 	.key-point {
-		margin-top: 28px;
+		margin-top: 22px;
 	}
 
 	.reading-block h2,
 	.two-notes h2,
 	.artifact-table-card h3,
 	.choice-panel h3,
-	.trace-card h3 {
+	.trace-rail h3 {
 		display: flex;
 		align-items: center;
 		gap: 8px;
@@ -2829,8 +2831,8 @@
 
 	.reading-block ul {
 		display: grid;
-		gap: 10px;
-		margin: 14px 0 0;
+		gap: 8px;
+		margin: 12px 0 0;
 		padding: 0;
 		list-style: none;
 	}
@@ -2839,7 +2841,7 @@
 		position: relative;
 		padding-left: 24px;
 		color: #374151;
-		line-height: 1.55;
+		line-height: 1.48;
 	}
 
 	.reading-block li::before {
@@ -2864,14 +2866,14 @@
 	.artifact-table-card,
 	.artifact-work,
 	.choice-panel,
-	.trace-card {
+	.trace-rail {
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: var(--panel-strong);
 	}
 
 	.two-notes div {
-		padding: 18px;
+		padding: 16px;
 	}
 
 	.two-notes p {
@@ -2883,7 +2885,7 @@
 	.key-point {
 		display: grid;
 		gap: 8px;
-		padding: 18px;
+		padding: 16px;
 		border-color: rgba(15, 118, 110, 0.35);
 		background: rgba(15, 118, 110, 0.07);
 	}
@@ -2894,7 +2896,7 @@
 	}
 
 	.key-point span {
-		font-size: 1.1rem;
+		font-size: 1.02rem;
 		font-weight: 780;
 		line-height: 1.42;
 	}
@@ -2903,8 +2905,8 @@
 		position: sticky;
 		top: 18px;
 		display: grid;
-		gap: 14px;
-		padding: 18px;
+		gap: 12px;
+		padding: 16px;
 	}
 
 	.case-header {
@@ -2912,7 +2914,7 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		gap: 18px;
-		padding: 16px;
+		padding: 14px;
 		border-radius: 8px;
 		background: #172321;
 		color: #ffffff;
@@ -2935,6 +2937,7 @@
 	.case-header p {
 		margin-top: 4px;
 		color: #d7e3e1;
+		line-height: 1.42;
 	}
 
 	.artifact-icon {
@@ -2947,10 +2950,19 @@
 		background: rgba(255, 255, 255, 0.12);
 	}
 
+	.case-context {
+		min-width: 0;
+		display: grid;
+		grid-template-columns: minmax(220px, 0.72fr) minmax(240px, 1fr);
+		gap: 10px;
+		align-items: stretch;
+	}
+
 	.case-image {
 		display: block;
 		width: 100%;
-		aspect-ratio: 16 / 6.5;
+		height: 100%;
+		min-height: 156px;
 		object-fit: cover;
 		border: 1px solid var(--line);
 		border-radius: 8px;
@@ -2963,8 +2975,8 @@
 	}
 
 	.case-facts div {
-		min-height: 78px;
-		padding: 12px;
+		min-height: 70px;
+		padding: 10px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: #ffffff;
@@ -2981,13 +2993,14 @@
 
 	.case-facts strong {
 		display: block;
-		margin-top: 7px;
+		margin-top: 5px;
 		color: var(--ink);
-		font-size: 1rem;
+		font-size: 0.94rem;
 		line-height: 1.25;
 	}
 
 	.artifact-work {
+		min-width: 0;
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0;
@@ -2997,8 +3010,8 @@
 
 	.artifact-row {
 		display: grid;
-		gap: 7px;
-		padding: 14px;
+		gap: 6px;
+		padding: 12px;
 		background: #ffffff;
 	}
 
@@ -3007,11 +3020,13 @@
 	}
 
 	.artifact-deck {
+		min-width: 0;
 		display: grid;
 		gap: 12px;
 	}
 
 	.artifact-table-card {
+		min-width: 0;
 		overflow: hidden;
 		background: #ffffff;
 	}
@@ -3019,7 +3034,7 @@
 	.artifact-table-card header {
 		display: grid;
 		gap: 5px;
-		padding: 14px 14px 10px;
+		padding: 12px 14px 9px;
 		border-bottom: 1px solid var(--line);
 		background: linear-gradient(180deg, #ffffff, #f7f9fb);
 	}
@@ -3053,7 +3068,7 @@
 
 	.artifact-table-card th,
 	.artifact-table-card td {
-		padding: 10px 12px;
+		padding: 9px 12px;
 		border-bottom: 1px solid var(--line);
 		text-align: left;
 		vertical-align: top;
@@ -3082,7 +3097,8 @@
 	}
 
 	.choice-panel,
-	.trace-card {
+	.trace-rail {
+		min-width: 0;
 		padding: 14px;
 	}
 
@@ -3094,8 +3110,7 @@
 		gap: 12px;
 	}
 
-	.choice-header button,
-	.trace-controls button {
+	.choice-header button {
 		width: 36px;
 		min-height: 34px;
 		padding: 0;
@@ -3111,7 +3126,7 @@
 		display: grid;
 		gap: 5px;
 		width: 100%;
-		padding: 13px;
+		padding: 12px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
 		background: #ffffff;
@@ -3173,19 +3188,71 @@
 		font-weight: 750;
 	}
 
-	.trace-controls {
+	.trace-steps {
+		min-width: 0;
 		display: flex;
 		gap: 8px;
 		margin-top: 12px;
+		padding-bottom: 3px;
+		overflow-x: auto;
+		scrollbar-width: thin;
+	}
+
+	.trace-steps button {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		gap: 7px;
+		max-width: 190px;
+		min-height: 34px;
+		padding: 0 10px 0 7px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: #ffffff;
+		color: var(--muted);
+		font-size: 0.82rem;
+		font-weight: 780;
+	}
+
+	.trace-steps button.active {
+		border-color: rgba(15, 118, 110, 0.5);
+		background: rgba(15, 118, 110, 0.08);
+		color: #134e4a;
+	}
+
+	.trace-steps button span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 22px;
+		height: 22px;
+		border-radius: 999px;
+		background: var(--soft);
+		color: var(--ink);
+		font-size: 0.76rem;
+	}
+
+	.trace-steps button strong {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.trace-detail {
 		display: grid;
-		gap: 6px;
+		grid-template-columns: minmax(150px, 0.36fr) minmax(0, 0.64fr);
+		gap: 6px 12px;
 		margin-top: 12px;
 		padding: 12px;
 		border-radius: 8px;
 		background: #ffffff;
+	}
+
+	.trace-detail strong {
+		grid-row: span 2;
+		align-self: center;
+		font-size: 1rem;
+		line-height: 1.3;
 	}
 
 	.trace-detail span {
@@ -3234,6 +3301,7 @@
 		}
 
 		.chapter-nav {
+			width: 100%;
 			justify-content: flex-start;
 		}
 
@@ -3252,9 +3320,17 @@
 		}
 
 		.chapter-nav {
-			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+			flex-wrap: nowrap;
+			margin-inline: -12px;
+			padding: 0 12px 4px;
+			overflow-x: auto;
+			scrollbar-width: thin;
+		}
+
+		.chapter-nav button {
+			flex: 0 0 auto;
+			min-height: 34px;
+			padding: 0 10px;
 		}
 
 		.progress-summary,
@@ -3275,7 +3351,7 @@
 
 		.lesson-pane,
 		.practice-pane {
-			padding: 16px;
+			padding: 14px;
 		}
 
 		.lesson-pane {
@@ -3285,17 +3361,45 @@
 		.stage-meta,
 		.two-notes,
 		.artifact-work,
+		.case-context,
 		.case-facts,
-		.sequence-bar {
+		.sequence-bar,
+		.trace-detail {
 			grid-template-columns: 1fr;
 		}
 
 		.stage-meta {
 			display: grid;
+			margin-bottom: 18px;
 		}
 
 		h1 {
-			font-size: clamp(2.25rem, 14vw, 3.8rem);
+			font-size: clamp(2rem, 9vw, 2.8rem);
+		}
+
+		.question,
+		.lesson-copy {
+			margin-top: 14px;
+		}
+
+		.reading-block,
+		.two-notes,
+		.key-point {
+			margin-top: 18px;
+		}
+
+		.case-image {
+			aspect-ratio: 16 / 5;
+			height: auto;
+			min-height: 0;
+		}
+
+		.trace-detail strong {
+			grid-row: auto;
+		}
+
+		.artifact-table-card table {
+			min-width: 600px;
 		}
 
 		.sequence-bar {
