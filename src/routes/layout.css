@@ -3,6 +3,7 @@
 @plugin '@tailwindcss/typography';
 
 :root {
+	color-scheme: light;
 	font-family:
 		Inter,
 		ui-sans-serif,
@@ -18,6 +19,12 @@
 	-webkit-font-smoothing: antialiased;
 }
 
+html[data-theme='dark'] {
+	color-scheme: dark;
+	color: #eef5f1;
+	background: #0b1110;
+}
+
 html {
 	scroll-behavior: smooth;
 }
@@ -29,6 +36,12 @@ body {
 	background:
 		linear-gradient(180deg, rgba(247, 240, 228, 0.94), rgba(231, 220, 202, 0.96)),
 		radial-gradient(circle at top left, rgba(21, 96, 92, 0.14), transparent 38%), #f7f0e4;
+}
+
+html[data-theme='dark'] body {
+	background:
+		radial-gradient(circle at top left, rgba(141, 217, 206, 0.12), transparent 36%),
+		linear-gradient(180deg, rgba(11, 17, 16, 0.98), rgba(16, 24, 22, 0.98)), #0b1110;
 }
 
 button,
@@ -51,4 +64,9 @@ a:focus-visible {
 ::selection {
 	color: #fffaf1;
 	background: #9f3f34;
+}
+
+html[data-theme='dark'] ::selection {
+	color: #061312;
+	background: #8dd9ce;
 }

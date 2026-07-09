@@ -24,6 +24,7 @@
 	import Landmark from '@lucide/svelte/icons/landmark';
 	import Layers3 from '@lucide/svelte/icons/layers-3';
 	import ListChecks from '@lucide/svelte/icons/list-checks';
+	import Moon from '@lucide/svelte/icons/moon';
 	import Network from '@lucide/svelte/icons/network';
 	import PackageCheck from '@lucide/svelte/icons/package-check';
 	import ReceiptText from '@lucide/svelte/icons/receipt-text';
@@ -31,11 +32,14 @@
 	import ScrollText from '@lucide/svelte/icons/scroll-text';
 	import SearchCheck from '@lucide/svelte/icons/search-check';
 	import ShieldCheck from '@lucide/svelte/icons/shield-check';
+	import Sun from '@lucide/svelte/icons/sun';
 	import Table2 from '@lucide/svelte/icons/table-2';
 	import Tags from '@lucide/svelte/icons/tags';
 	import Workflow from '@lucide/svelte/icons/workflow';
+	import { onMount } from 'svelte';
 
 	type IconComponent = typeof Calculator;
+	type Theme = 'light' | 'dark';
 
 	type PracticeChoice = {
 		id: string;
@@ -2226,12 +2230,26 @@
 	let selectedAnswer = $state<string | null>(null);
 	let completedIds = $state<string[]>(['home']);
 	let traceIndex = $state(7);
+	let theme = $state<Theme>('light');
 
 	const activeStage = $derived(stages[activeIndex]);
 	const ActiveIcon = $derived(activeStage.icon);
+	const ThemeIcon = $derived(theme === 'dark' ? Sun : Moon);
 	const progressPercent = $derived(((activeIndex + 1) / stages.length) * 100);
 	const selectedIsCorrect = $derived(selectedAnswer === activeStage.correctChoice);
 	const activeTraceNode = $derived(nimbusScenario.traceNodes[traceIndex]);
+	const themeLabel = $derived(theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+
+	onMount(() => {
+		const storedTheme = localStorage.getItem('accounting-cycle-theme');
+		if (storedTheme === 'light' || storedTheme === 'dark') {
+			setTheme(storedTheme);
+			return cleanupTheme;
+		}
+
+		setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		return cleanupTheme;
+	});
 
 	const currentChoices = $derived.by(() => {
 		if (activeStage.id === 'accounting-equation') {
@@ -2332,6 +2350,21 @@
 	function chooseTrace(index: number) {
 		traceIndex = Math.max(0, Math.min(index, nimbusScenario.traceNodes.length - 1));
 	}
+
+	function setTheme(nextTheme: Theme) {
+		theme = nextTheme;
+		document.documentElement.dataset.theme = nextTheme;
+	}
+
+	function cleanupTheme() {
+		delete document.documentElement.dataset.theme;
+	}
+
+	function toggleTheme() {
+		const nextTheme = theme === 'dark' ? 'light' : 'dark';
+		setTheme(nextTheme);
+		localStorage.setItem('accounting-cycle-theme', nextTheme);
+	}
 </script>
 
 <svelte:head>
@@ -2340,30 +2373,44 @@
 		name="description"
 		content="A guided accounting-cycle simulator where each lesson pairs with one practical Nimbus Bikes case artifact."
 	/>
-	<meta name="theme-color" content="#f6f7f9" />
+	<meta name="theme-color" content={theme === 'dark' ? '#0b1110' : '#f6f7f9'} />
 </svelte:head>
 
-<main class="learning-shell" style:--progress={`${progressPercent}%`}>
+<main class="learning-shell" data-theme={theme} style:--progress={`${progressPercent}%`}>
 	<header class="topbar">
 		<div class="brand">
 			<Calculator size={20} strokeWidth={2.4} />
 			<span>Accounting Cycle Simulator</span>
 		</div>
 
-		<nav class="chapter-nav" aria-label="Chapters">
-			{#each groupNav as group (group.label)}
-				<button
-					type="button"
-					class={{
-						active: activeStage.group === group.label || activeStage.id === group.firstStage
-					}}
-					aria-current={activeStage.group === group.label ? 'step' : undefined}
-					onclick={() => chooseGroup(group.firstStage)}
-				>
-					{group.label}
-				</button>
-			{/each}
-		</nav>
+		<div class="top-actions">
+			<nav class="chapter-nav" aria-label="Chapters">
+				{#each groupNav as group (group.label)}
+					<button
+						type="button"
+						class={{
+							active: activeStage.group === group.label || activeStage.id === group.firstStage
+						}}
+						aria-current={activeStage.group === group.label ? 'step' : undefined}
+						onclick={() => chooseGroup(group.firstStage)}
+					>
+						{group.label}
+					</button>
+				{/each}
+			</nav>
+
+			<button
+				type="button"
+				class="theme-toggle"
+				aria-label={themeLabel}
+				aria-pressed={theme === 'dark'}
+				title={themeLabel}
+				onclick={toggleTheme}
+			>
+				<ThemeIcon size={17} strokeWidth={2.4} />
+				<span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+			</button>
+		</div>
 	</header>
 
 	<section class="progress-strip" aria-label="Accounting cycle progress">
@@ -2596,26 +2643,115 @@
 		overflow: auto;
 	}
 
+	:global(html[data-theme='dark']) {
+		color-scheme: dark;
+	}
+
+	:global(html[data-theme='dark'] body) {
+		background: #0b1110;
+		color: #eef5f1;
+	}
+
 	:global(button) {
 		font: inherit;
 	}
 
 	.learning-shell {
-		--ink: #17191c;
-		--muted: #5d6470;
-		--soft: #eef1f5;
-		--line: #d9dee6;
-		--panel: #ffffff;
-		--panel-strong: #f9fafb;
-		--teal: #0f766e;
-		--rust: #b84a3a;
-		--gold: #b7791f;
-		--green: #15803d;
-		min-height: 100vh;
-		padding: 18px;
-		background:
+		--shell-bg:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 247, 249, 0.96)),
 			linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(184, 74, 58, 0.08));
+		--ink: #17191c;
+		--heading: #17191c;
+		--muted: #5d6470;
+		--copy: #374151;
+		--question: #21302f;
+		--soft: #eef1f5;
+		--line: #d9dee6;
+		--line-strong: #c8d0da;
+		--panel: #ffffff;
+		--panel-strong: #f9fafb;
+		--panel-glass: rgba(255, 255, 255, 0.96);
+		--control: #ffffff;
+		--control-hover: #f7faf9;
+		--control-active: #123d3a;
+		--control-active-text: #ffffff;
+		--table-head: #fbfcfd;
+		--table-alt: #fbfcfd;
+		--artifact-header: linear-gradient(180deg, #ffffff, #f7f9fb);
+		--case-bg: #172321;
+		--case-eyebrow: #a9ded7;
+		--case-copy: #d7e3e1;
+		--icon-bg: rgba(255, 255, 255, 0.12);
+		--teal: #0f766e;
+		--teal-soft: rgba(15, 118, 110, 0.08);
+		--teal-line: rgba(15, 118, 110, 0.35);
+		--teal-hover: rgba(15, 118, 110, 0.55);
+		--teal-focus: rgba(15, 118, 110, 0.28);
+		--rust: #b84a3a;
+		--action-text: #ffffff;
+		--gold: #b7791f;
+		--green: #15803d;
+		--selected-bg: rgba(183, 121, 31, 0.08);
+		--correct-bg: rgba(21, 128, 61, 0.08);
+		--missed-bg: rgba(184, 74, 58, 0.08);
+		--feedback-good-bg: rgba(21, 128, 61, 0.1);
+		--feedback-good-text: #14532d;
+		--feedback-bad-bg: rgba(184, 74, 58, 0.1);
+		--feedback-bad-text: #7f1d1d;
+		--shadow: 0 24px 70px rgba(20, 27, 35, 0.08);
+		min-height: 100vh;
+		padding: 18px;
+		background: var(--shell-bg);
+		color: var(--ink);
+		transition:
+			background 180ms ease,
+			color 180ms ease;
+	}
+
+	.learning-shell[data-theme='dark'] {
+		--shell-bg:
+			radial-gradient(circle at 12% 0%, rgba(28, 116, 108, 0.24), transparent 30%),
+			radial-gradient(circle at 92% 14%, rgba(184, 74, 58, 0.14), transparent 31%),
+			linear-gradient(180deg, #0b1110 0%, #101816 48%, #0a0f0e 100%);
+		--ink: #eef5f1;
+		--heading: #f8faf8;
+		--muted: #9aa8a2;
+		--copy: #c9d4cf;
+		--question: #f0f6f4;
+		--soft: #16221f;
+		--line: #2a3834;
+		--line-strong: #3b4d48;
+		--panel: #101816;
+		--panel-strong: #141d1a;
+		--panel-glass: rgba(15, 23, 21, 0.93);
+		--control: #111b18;
+		--control-hover: #18231f;
+		--control-active: #8dd9ce;
+		--control-active-text: #061312;
+		--table-head: #17221f;
+		--table-alt: rgba(141, 217, 206, 0.035);
+		--artifact-header: linear-gradient(180deg, #17221f, #121b18);
+		--case-bg: linear-gradient(135deg, #0d1a18, #17231f);
+		--case-eyebrow: #8dd9ce;
+		--case-copy: #bed1cc;
+		--icon-bg: rgba(141, 217, 206, 0.12);
+		--teal: #8dd9ce;
+		--teal-soft: rgba(141, 217, 206, 0.1);
+		--teal-line: rgba(141, 217, 206, 0.36);
+		--teal-hover: rgba(141, 217, 206, 0.48);
+		--teal-focus: rgba(141, 217, 206, 0.33);
+		--rust: #e07a66;
+		--action-text: #061312;
+		--gold: #e3b65f;
+		--green: #7ed994;
+		--selected-bg: rgba(227, 182, 95, 0.12);
+		--correct-bg: rgba(126, 217, 148, 0.12);
+		--missed-bg: rgba(224, 122, 102, 0.13);
+		--feedback-good-bg: rgba(126, 217, 148, 0.14);
+		--feedback-good-text: #bff3ca;
+		--feedback-bad-bg: rgba(224, 122, 102, 0.14);
+		--feedback-bad-text: #ffc8be;
+		--shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 	}
 
 	button {
@@ -2625,7 +2761,7 @@
 	}
 
 	button:focus-visible {
-		outline: 3px solid rgba(15, 118, 110, 0.28);
+		outline: 3px solid var(--teal-focus);
 		outline-offset: 3px;
 	}
 
@@ -2658,6 +2794,13 @@
 		letter-spacing: 0;
 	}
 
+	.top-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 10px;
+	}
+
 	.chapter-nav {
 		display: flex;
 		flex-wrap: wrap;
@@ -2667,14 +2810,15 @@
 
 	.chapter-nav button,
 	.sequence-bar button,
-	.choice-header button {
+	.choice-header button,
+	.theme-toggle {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
 		min-height: 38px;
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--control);
 		border: 1px solid var(--line);
 		color: var(--muted);
 		font-weight: 750;
@@ -2684,10 +2828,23 @@
 		padding: 0 12px;
 	}
 
+	.theme-toggle {
+		flex: 0 0 auto;
+		padding: 0 12px;
+		color: var(--ink);
+	}
+
+	.chapter-nav button:hover,
+	.sequence-bar button:hover:not(:disabled),
+	.choice-header button:hover,
+	.theme-toggle:hover {
+		background: var(--control-hover);
+	}
+
 	.chapter-nav button.active {
-		background: #123d3a;
-		border-color: #123d3a;
-		color: #ffffff;
+		background: var(--control-active);
+		border-color: var(--control-active);
+		color: var(--control-active-text);
 	}
 
 	.progress-strip {
@@ -2726,7 +2883,7 @@
 		min-height: 38px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--control);
 		color: var(--ink);
 		font: inherit;
 		font-weight: 750;
@@ -2752,8 +2909,8 @@
 		min-width: 0;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.96);
-		box-shadow: 0 24px 70px rgba(20, 27, 35, 0.08);
+		background: var(--panel-glass);
+		box-shadow: var(--shadow);
 	}
 
 	.lesson-pane {
@@ -2787,6 +2944,7 @@
 
 	h1 {
 		max-width: 850px;
+		color: var(--heading);
 		font-size: clamp(2rem, 3.2vw, 3.6rem);
 		line-height: 1.04;
 		letter-spacing: 0;
@@ -2795,7 +2953,7 @@
 	.question {
 		max-width: 760px;
 		margin-top: 16px;
-		color: #21302f;
+		color: var(--question);
 		font-size: clamp(1.08rem, 1.45vw, 1.34rem);
 		line-height: 1.35;
 		font-weight: 720;
@@ -2823,7 +2981,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		color: #26302f;
+		color: var(--question);
 		font-size: 0.95rem;
 		font-weight: 850;
 		letter-spacing: 0;
@@ -2840,7 +2998,7 @@
 	.reading-block li {
 		position: relative;
 		padding-left: 24px;
-		color: #374151;
+		color: var(--copy);
 		line-height: 1.48;
 	}
 
@@ -2886,8 +3044,8 @@
 		display: grid;
 		gap: 8px;
 		padding: 16px;
-		border-color: rgba(15, 118, 110, 0.35);
-		background: rgba(15, 118, 110, 0.07);
+		border-color: var(--teal-line);
+		background: var(--teal-soft);
 	}
 
 	.key-point strong {
@@ -2916,14 +3074,14 @@
 		gap: 18px;
 		padding: 14px;
 		border-radius: 8px;
-		background: #172321;
+		background: var(--case-bg);
 		color: #ffffff;
 	}
 
 	.eyebrow {
 		display: block;
 		margin-bottom: 8px;
-		color: #a9ded7;
+		color: var(--case-eyebrow);
 		font-size: 0.8rem;
 		font-weight: 830;
 		letter-spacing: 0;
@@ -2936,7 +3094,7 @@
 
 	.case-header p {
 		margin-top: 4px;
-		color: #d7e3e1;
+		color: var(--case-copy);
 		line-height: 1.42;
 	}
 
@@ -2947,7 +3105,7 @@
 		width: 44px;
 		height: 44px;
 		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.12);
+		background: var(--icon-bg);
 	}
 
 	.case-context {
@@ -2979,7 +3137,7 @@
 		padding: 10px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--panel);
 	}
 
 	.case-facts span,
@@ -3012,7 +3170,7 @@
 		display: grid;
 		gap: 6px;
 		padding: 12px;
-		background: #ffffff;
+		background: var(--panel);
 	}
 
 	.artifact-row strong {
@@ -3028,7 +3186,7 @@
 	.artifact-table-card {
 		min-width: 0;
 		overflow: hidden;
-		background: #ffffff;
+		background: var(--panel);
 	}
 
 	.artifact-table-card header {
@@ -3036,7 +3194,7 @@
 		gap: 5px;
 		padding: 12px 14px 9px;
 		border-bottom: 1px solid var(--line);
-		background: linear-gradient(180deg, #ffffff, #f7f9fb);
+		background: var(--artifact-header);
 	}
 
 	.artifact-table-card small {
@@ -3079,11 +3237,11 @@
 		font-size: 0.72rem;
 		font-weight: 850;
 		letter-spacing: 0;
-		background: #fbfcfd;
+		background: var(--table-head);
 	}
 
 	.artifact-table-card td {
-		color: #252b33;
+		color: var(--copy);
 		font-size: 0.88rem;
 		line-height: 1.35;
 	}
@@ -3093,7 +3251,7 @@
 	}
 
 	.artifact-table-card tbody tr:nth-child(even) td {
-		background: #fbfcfd;
+		background: var(--table-alt);
 	}
 
 	.choice-panel,
@@ -3129,12 +3287,12 @@
 		padding: 12px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--panel);
 		text-align: left;
 	}
 
 	.choices button:hover {
-		border-color: rgba(15, 118, 110, 0.55);
+		border-color: var(--teal-hover);
 	}
 
 	.choices button strong {
@@ -3150,17 +3308,17 @@
 
 	.choices button.selected {
 		border-color: var(--gold);
-		background: rgba(183, 121, 31, 0.08);
+		background: var(--selected-bg);
 	}
 
 	.choices button.correct {
 		border-color: var(--green);
-		background: rgba(21, 128, 61, 0.08);
+		background: var(--correct-bg);
 	}
 
 	.choices button.missed {
 		border-color: var(--rust);
-		background: rgba(184, 74, 58, 0.08);
+		background: var(--missed-bg);
 	}
 
 	.feedback {
@@ -3173,13 +3331,13 @@
 	}
 
 	.feedback.good {
-		background: rgba(21, 128, 61, 0.1);
-		color: #14532d;
+		background: var(--feedback-good-bg);
+		color: var(--feedback-good-text);
 	}
 
 	.feedback.needs-work {
-		background: rgba(184, 74, 58, 0.1);
-		color: #7f1d1d;
+		background: var(--feedback-bad-bg);
+		color: var(--feedback-bad-text);
 	}
 
 	.trace-heading span {
@@ -3208,16 +3366,16 @@
 		padding: 0 10px 0 7px;
 		border: 1px solid var(--line);
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--panel);
 		color: var(--muted);
 		font-size: 0.82rem;
 		font-weight: 780;
 	}
 
 	.trace-steps button.active {
-		border-color: rgba(15, 118, 110, 0.5);
-		background: rgba(15, 118, 110, 0.08);
-		color: #134e4a;
+		border-color: var(--teal-hover);
+		background: var(--teal-soft);
+		color: var(--teal);
 	}
 
 	.trace-steps button span {
@@ -3245,7 +3403,7 @@
 		margin-top: 12px;
 		padding: 12px;
 		border-radius: 8px;
-		background: #ffffff;
+		background: var(--panel);
 	}
 
 	.trace-detail strong {
@@ -3280,7 +3438,7 @@
 	.sequence-bar button.next {
 		background: var(--rust);
 		border-color: var(--rust);
-		color: #ffffff;
+		color: var(--action-text);
 	}
 
 	.sequence-bar div {
@@ -3305,6 +3463,12 @@
 			justify-content: flex-start;
 		}
 
+		.top-actions {
+			width: 100%;
+			align-items: flex-start;
+			justify-content: space-between;
+		}
+
 		.workspace {
 			grid-template-columns: 1fr;
 		}
@@ -3320,11 +3484,18 @@
 		}
 
 		.chapter-nav {
+			flex: 1 1 auto;
+			min-width: 0;
+			width: auto;
 			flex-wrap: nowrap;
-			margin-inline: -12px;
-			padding: 0 12px 4px;
+			margin-inline: 0;
+			padding: 0 0 4px;
 			overflow-x: auto;
 			scrollbar-width: thin;
+		}
+
+		.theme-toggle span {
+			display: none;
 		}
 
 		.chapter-nav button {
