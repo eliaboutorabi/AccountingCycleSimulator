@@ -2408,7 +2408,6 @@
 				onclick={toggleTheme}
 			>
 				<ThemeIcon size={17} strokeWidth={2.4} />
-				<span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
 			</button>
 		</div>
 	</header>
@@ -2830,7 +2829,8 @@
 
 	.theme-toggle {
 		flex: 0 0 auto;
-		padding: 0 12px;
+		inline-size: 38px;
+		padding: 0;
 		color: var(--ink);
 	}
 
@@ -3492,10 +3492,6 @@
 			padding: 0 0 4px;
 			overflow-x: auto;
 			scrollbar-width: thin;
-		}
-
-		.theme-toggle span {
-			display: none;
 		}
 
 		.chapter-nav button {
